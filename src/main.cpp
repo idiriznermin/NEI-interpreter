@@ -2,7 +2,7 @@
 
 int main()
 {
-    Message msg("MEOW Hello World");
+    Message msg("NYA Hello World");
     msg.print();
     return 0;
 }
