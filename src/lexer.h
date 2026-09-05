@@ -26,6 +26,10 @@ enum class TokenType
     MULTIPLY,
     DIVIDE,
 
+    AND,
+    OR,
+    NOT,
+
     COLON,
     COMMA,
     LEFT_BRACKET,

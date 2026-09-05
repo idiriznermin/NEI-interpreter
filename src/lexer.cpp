@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 Lexer::Lexer(const std::string &source):
     source(source)
 {}
@@ -14,7 +15,7 @@ void Token::print() const
 {
     std::cout << value << std::endl;
 }
-/// future fix: handle negatives and equations, handle bools
+
 bool isInteger(const std::string& s)
 {
     int sz = (int)s.size();
@@ -37,8 +38,45 @@ bool isIdentifier(const std::string& s)
     }
     return true;
 }
+
+std::map <std::string, TokenType> keywords;
+
+void initialize_keywords()
+{
+    keywords["var"] = TokenType::VAR;
+    keywords["const"] = TokenType::CONST;
+    keywords["arr"] = TokenType::ARR;
+    keywords["if"] = TokenType::IF;
+    keywords["else"] = TokenType::ELSE;
+    keywords["endif"] = TokenType::ENDIF;
+    keywords["swap"] = TokenType::SWAP;
+
+    keywords["int"] = TokenType::INT;
+    keywords["char"] = TokenType::CHAR;
+    keywords["bool"] = TokenType::BOOL;
+
+    keywords[":="] = TokenType::ASSIGN;
+    keywords["="] = TokenType::EQUALS;
+    keywords["+"] = TokenType::PLUS;
+    keywords["-"] = TokenType::MINUS;
+    keywords["*"] = TokenType::MULTIPLY;
+    keywords["/"] = TokenType::DIVIDE;
+
+    keywords["&"] = TokenType::AND;
+    keywords["|"] = TokenType::OR;
+    keywords["!"] = TokenType::NOT;
+
+    keywords[":"] = TokenType::COLON;
+    keywords[","] = TokenType::COMMA;
+    keywords["("] = TokenType::LEFT_BRACKET;
+    keywords[")"] = TokenType::RIGHT_BRACKET;
+
+    keywords["\n"] = TokenType::END_OF_LINE;
+    keywords["exit"] = TokenType::END_OF_FILE;
+}
 std::vector < Token > Lexer::tokenize()
 {
+    initialize_keywords();
     std::vector < Token > tokens;
     int pos = 0;
     while(pos < source.size())
