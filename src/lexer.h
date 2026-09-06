@@ -21,11 +21,23 @@ enum class TokenType
 
     ASSIGN, // :=
     EQUALS,
+    LESS,
+    GREATER,
+    LESS_EQUAL,
+    GREATER_EQUAL,
+
     PLUS,
     MINUS,
     MULTIPLY,
     DIVIDE,
 
+    BITWISE_AND,
+    BITWISE_OR,
+    BITWISE_XOR,
+
+    SHIFT_LEFT,
+    SHIFT_RIGHT,
+    
     AND,
     OR,
     NOT,
@@ -36,8 +48,8 @@ enum class TokenType
     RIGHT_BRACKET,
 
     END_OF_LINE, // \n
-    END_OF_FILE // exit
-
+    END_OF_FILE, // exit
+    ERROR
 };
 
 struct Token

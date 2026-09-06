@@ -16,29 +16,6 @@ void Token::print() const
     std::cout << value << std::endl;
 }
 
-bool isInteger(const std::string& s)
-{
-    int sz = (int)s.size();
-    if(sz == 0)return false;
-    for (char sym: s)
-        if(!(sym >= '0' && sym <= '9'))return false;
-    return true;
-}
-
-bool isIdentifier(const std::string& s)
-{
-    int sz = (int)s.size();
-    if(sz == 0)return false;
-    if(!(s[0] >= 'a' && s[0] <= 'z') && !(s[0] >= 'A' && s[0] <= 'Z'))
-        return false;
-    for (char sym: s)
-    {
-        if(!(s[0] >= 'a' && s[0] <= 'z') && !(s[0] >= 'A' && s[0] <= 'Z') && !(s[0] >= '0' && s[0] <= '9') && s[0] != '_')
-            return false;
-    }
-    return true;
-}
-
 std::map <std::string, TokenType> keywords;
 
 void initialize_keywords()
@@ -56,15 +33,27 @@ void initialize_keywords()
     keywords["bool"] = TokenType::BOOL;
 
     keywords[":="] = TokenType::ASSIGN;
-    keywords["="] = TokenType::EQUALS;
+    keywords["="] = TokenType::EQUALS; /// carefull with the next token
+    keywords["<"] = TokenType::LESS;
+    keywords[">"] = TokenType::GREATER;
+    keywords["<="] = TokenType::LESS_EQUAL;
+    keywords[">="] = TokenType::GREATER_EQUAL;
+
     keywords["+"] = TokenType::PLUS;
     keywords["-"] = TokenType::MINUS;
     keywords["*"] = TokenType::MULTIPLY;
     keywords["/"] = TokenType::DIVIDE;
 
-    keywords["&"] = TokenType::AND;
-    keywords["|"] = TokenType::OR;
+    keywords["&"] = TokenType::BITWISE_AND;
+    keywords["|"] = TokenType::BITWISE_OR;
+    keywords["^"] = TokenType::BITWISE_XOR;
+
+    keywords["<<"] = TokenType::SHIFT_LEFT;
+    keywords[">>"] = TokenType::SHIFT_RIGHT;
     keywords["!"] = TokenType::NOT;
+
+    keywords["&&"] = TokenType::AND;
+    keywords["||"] = TokenType::OR;
 
     keywords[":"] = TokenType::COLON;
     keywords[","] = TokenType::COMMA;
@@ -74,52 +63,82 @@ void initialize_keywords()
     keywords["\n"] = TokenType::END_OF_LINE;
     keywords["exit"] = TokenType::END_OF_FILE;
 }
+
+/// 0 - empty space
+/// 1 - starts a word
+/// 2 - starts an integer
+/// 3 - another
+int determineType(char sym)
+{
+    if(sym == ' ')return 0;
+    if(sym >= 'a' && sym <= 'z')return 1;
+    if(sym >= 'A' && sym <= 'Z')return 1;
+    if(sym >= '0' && sym <= '9')return 2;
+    return 3;
+}
+
+bool continuesType1(char sym)
+{
+    if(sym >= 'a' && sym <= 'z')return true;
+    if(sym >= 'A' && sym <= 'Z')return true;
+    if(sym >= '0' && sym <= '9')return true;
+    return (sym == '_');
+}
+
 std::vector < Token > Lexer::tokenize()
 {
     initialize_keywords();
     std::vector < Token > tokens;
-    int pos = 0;
-    while(pos < source.size())
+    int pos = 0, sz = (int)(source.size());
+    while(pos < sz)
     {
-        std::string curr = "";
-        while((source[pos] != ' ') && (source[pos] != '\n') && (source[pos] != ','))
+        while(pos < sz && determineType(source[pos]) == 0)pos ++;
+        if(pos >= sz)break;
+        int current_type = determineType(source[pos]);
+        std::string curr_value = "";
+
+        if(current_type == 1)
         {
-            curr = curr + source[pos];
+            curr_value += source[pos];
             pos ++;
+            while(pos < sz && continuesType1(source[pos]))
+            {
+                curr_value += source[pos];
+                pos ++;
+            }
+            if(keywords.find(curr_value) == keywords.end())
+                tokens.push_back(Token(TokenType::IDENTIFIER, curr_value));
+            else tokens.push_back(Token(keywords[curr_value], curr_value));
+            continue;
         }
-
-        std::cout << curr << std::endl;
-        if(curr == "var")
-            tokens.push_back(Token(TokenType::VAR, curr));
-        else if(curr == "const")
-            tokens.push_back(Token(TokenType::CONST, curr));
-        else if(curr == "arr")
-            tokens.push_back(Token((TokenType::ARR), curr));
-        else if(curr == "int:")
-            tokens.push_back(Token(TokenType::INT, curr));
-        else if(curr == "char:")
-            tokens.push_back(Token(TokenType::CHAR, curr));
-        else if(curr == "bool:")
-            tokens.push_back(Token(TokenType::BOOL, curr));
-        else if(((int)curr.size() == 3) && (curr[0] == '\'') && (curr[2] == '\''))
-            tokens.push_back(Token(TokenType::CHAR_LITERAL, curr));
-        else if(isInteger(curr))
-            tokens.push_back(Token(TokenType::INTEGER, curr));
-        else if(curr == ":=")
-            tokens.push_back(Token(TokenType::ASSIGN, curr));
-        else if(curr == "=")
-            tokens.push_back(Token(TokenType::EQUALS, curr));
-        else if(curr == "swap")
-            tokens.push_back(Token(TokenType::SWAP, curr));
-        else if(isIdentifier(curr))
-            tokens.push_back(Token(TokenType::IDENTIFIER, curr));
-
-        if(source[pos] == '\n')
-            tokens.push_back(Token(TokenType::END_OF_LINE, curr));
-        else if(source[pos] == ',')
-            tokens.push_back(Token(TokenType::COMMA, curr));
-
-        pos ++;
+        if(current_type == 2)
+        {
+            curr_value += source[pos];
+            pos ++;
+            while(pos < sz && determineType(source[pos]) == 2)
+            {
+                curr_value += source[pos];
+                pos ++;
+            }
+            tokens.push_back(Token(TokenType::INTEGER, curr_value));
+            continue;
+        }
+        int best_matchpoint = -1;
+        std::string best_match = "";
+        for (int matchpoint = pos; matchpoint < (sz, pos + 5); ++ matchpoint)
+        {
+            curr_value += source[matchpoint];
+            if(keywords.find(curr_value) == keywords.end())continue;
+            best_matchpoint = matchpoint;
+            best_match = curr_value;
+        }
+        if(best_matchpoint == -1)
+        {
+            std::cout << "ERROR" << std::endl;
+            exit(0);
+        }
+        tokens.push_back(Token(keywords[best_match], best_match));
+        pos = best_matchpoint + 1;
     }
     return tokens;
 }

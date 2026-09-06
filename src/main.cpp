@@ -13,5 +13,10 @@ int main()
     );
     Lexer lexer(source);
     std::vector <Token> tokens = lexer.tokenize();
+
+    for (Token t: tokens)
+    {
+        std::cout << t.value << std::endl;
+    }
     return 0;
 }
