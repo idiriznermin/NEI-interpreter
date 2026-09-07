@@ -26,6 +26,6 @@ Token::Token(Token::Type type, bool value, int line, int col):
 
 void Token::print() const
 {
-    std::cout << value << " @ line: " << line << " col: "<< col <<  std::endl;
+    std::cout << " @ line: " << line << " col: "<< col <<  std::endl;
 }
 

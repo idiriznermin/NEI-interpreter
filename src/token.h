@@ -15,7 +15,6 @@ public:
         IF,
         ELSE,
         ENDIF,
-        SWAP,
 
         TYPE_INT,
         TYPE_CHAR,
@@ -27,6 +26,20 @@ public:
         LITERAL_BOOL,
 
         ASSIGN, // :=
+        OPERATOR,
+
+        COLON,
+        COMMA,
+        LEFT_BRACKET,
+        RIGHT_BRACKET,
+
+        EOLINE, // \n
+        EOFILE,
+        ERROR
+    };
+
+    enum class Operator
+    {
         EQUALS,
         LESS,
         GREATER,
@@ -43,22 +56,12 @@ public:
         BITWISE_OR,
         BITWISE_XOR,
         BITWISE_NOT,
-
         BITWISE_LEFT_SHIFT,
         BITWISE_RIGHT_SHIFT,
 
-        LOGICAL_AND,
-        LOGICAL_OR,
         LOGICAL_NOT,
-
-        COLON,
-        COMMA,
-        LEFT_BRACKET,
-        RIGHT_BRACKET,
-
-        EOLINE, // \n
-        EOFILE,
-        ERROR
+        LOGICAL_AND,
+        LOGICAL_OR
     };
 
     Token::Type type;

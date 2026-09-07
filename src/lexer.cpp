@@ -16,7 +16,6 @@ std::map<std::string, Token::Type> keywords = {
     {"if", Token::Type::IF},
     {"else", Token::Type::ELSE},
     {"endif", Token::Type::ENDIF},
-    {"swap", Token::Type::SWAP},
 
     {"int", Token::Type::TYPE_INT},
     {"char", Token::Type::TYPE_CHAR},
@@ -24,31 +23,30 @@ std::map<std::string, Token::Type> keywords = {
     {"false", Token::Type::TYPE_BOOL},
     {"True", Token::Type::TYPE_BOOL},
     {"False", Token::Type::TYPE_BOOL},
-    /// !
 
     {":=", Token::Type::ASSIGN},
-    {"=", Token::Type::EQUALS},
-    {"<", Token::Type::LESS},
-    {">", Token::Type::GREATER},
-    {"<=", Token::Type::LESS_EQUAL},
-    {">=", Token::Type::GREATER_EQUAL},
+    {"=", Token::Type::OPERATOR},
+    {"<", Token::Type::OPERATOR},
+    {">", Token::Type::OPERATOR},
+    {"<=", Token::Type::OPERATOR},
+    {">=", Token::Type::OPERATOR},
 
-    {"+", Token::Type::ADD},
-    {"-", Token::Type::SUB},
-    {"*", Token::Type::MUL},
-    {"/", Token::Type::DIV},
-    {"%", Token::Type::MOD},
+    {"+", Token::Type::OPERATOR},
+    {"-", Token::Type::OPERATOR},
+    {"*", Token::Type::OPERATOR},
+    {"/", Token::Type::OPERATOR},
+    {"%", Token::Type::OPERATOR},
 
-    {"&", Token::Type::BITWISE_AND},
-    {"|", Token::Type::BITWISE_OR},
-    {"^", Token::Type::BITWISE_XOR},
-    {"~", Token::Type::BITWISE_NOT},
-    {"<<", Token::Type::BITWISE_LEFT_SHIFT},
-    {">>", Token::Type::BITWISE_RIGHT_SHIFT},
+    {"&", Token::Type::OPERATOR},
+    {"|", Token::Type::OPERATOR},
+    {"^", Token::Type::OPERATOR},
+    {"~", Token::Type::OPERATOR},
+    {"<<", Token::Type::OPERATOR},
+    {">>", Token::Type::OPERATOR},
 
-    {"!", Token::Type::LOGICAL_NOT},
-    {"&&", Token::Type::LOGICAL_AND},
-    {"||", Token::Type::LOGICAL_OR},
+    {"!", Token::Type::OPERATOR},
+    {"&&", Token::Type::OPERATOR},
+    {"||", Token::Type::OPERATOR},
 
     {":", Token::Type::COLON},
     {",", Token::Type::COMMA},
@@ -58,6 +56,7 @@ std::map<std::string, Token::Type> keywords = {
     {"\n", Token::Type::EOLINE},
     {"exit", Token::Type::EOFILE}
 };
+
 
 /// 0 - empty space
 /// 1 - starts a word
@@ -78,7 +77,8 @@ bool continuesType1(char sym)
     if(sym >= 'a' && sym <= 'z')return true;
     if(sym >= 'A' && sym <= 'Z')return true;
     if(sym >= '0' && sym <= '9')return true;
-    return (sym == '_');
+    if(sym == '_')return true;
+    return false;
 }
 
 
@@ -89,35 +89,35 @@ std::vector<Token> Lexer::tokenize(const std::string& source)
     int pos = 0, sz = (int)(source.size());
 
     int last_newline = 0, cnt_newlines = 0;
-    while(pos < sz)
+    while (pos < sz)
     {
-        while(pos < sz && determineType(source[pos]) == 0)
+        while (pos < sz && determineType(source[pos]) == 0)
         {
             pos ++;
         }
-        if(pos >= sz)break;
+        if (pos >= sz) break;
         int current_type = determineType(source[pos]);
         std::string curr_value = "";
 
-        if(current_type == 1)
+        if (current_type == 1)
         {
             curr_value += source[pos];
             pos ++;
-            while(pos < sz && continuesType1(source[pos]))
+            while (pos < sz && continuesType1(source[pos]))
             {
                 curr_value += source[pos];
                 pos ++;
             }
-            if(keywords.find(curr_value) == keywords.end())
+            if (keywords.find(curr_value) == keywords.end())
                 tokens.push_back(Token(Token::Type::IDENTIFIER, curr_value, cnt_newlines, pos - last_newline));
             else tokens.push_back(Token(keywords[curr_value], curr_value, cnt_newlines, pos - last_newline));
             continue;
         }
-        if(current_type == 2)
+        if (current_type == 2)
         {
             curr_value += source[pos];
             pos ++;
-            while(pos < sz && determineType(source[pos]) == 2)
+            while (pos < sz && determineType(source[pos]) == 2)
             {
                 curr_value += source[pos];
                 pos ++;
@@ -134,7 +134,7 @@ std::vector<Token> Lexer::tokenize(const std::string& source)
             best_matchpoint = matchpoint;
             best_match = curr_value;
         }
-        if(best_matchpoint == -1)
+        if (best_matchpoint == -1)
         {
             std::cout << "ERROR" << std::endl;
             exit(0);
