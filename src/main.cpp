@@ -1,7 +1,10 @@
 #include "message.h"
+#include "token.h"
 #include "lexer.h"
+
 #include <iostream>
 #include <string>
+
 int main()
 {
    // Message msg("NYA Hello World");
@@ -11,12 +14,13 @@ int main()
         std::istreambuf_iterator<char>(std::cin),
         std::istreambuf_iterator<char>()
     );
-    Lexer lexer(source);
-    std::vector <Token> tokens = lexer.tokenize();
+
+    Lexer lexer;
+    std::vector<Token> tokens = lexer.tokenize(source);
 
     for (Token t: tokens)
     {
-        std::cout << t.value << std::endl;
+        t.print();
     }
     return 0;
 }

@@ -1,73 +1,69 @@
+#include "token.h"
 #include "lexer.h"
+
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <map>
-Lexer::Lexer(const std::string &source):
-    source(source)
-{}
 
-Token::Token(TokenType type, const std::string &value):
-    type(type), value(value)
-{}
+Lexer::Lexer() = default;
 
-void Token::print() const
-{
-    std::cout << value << std::endl;
-}
+std::map<std::string, Token::Type> keywords = {
+    {"var", Token::Type::VAR},
+    {"const", Token::Type::CONST},
+    {"arr", Token::Type::ARR},
+    {"if", Token::Type::IF},
+    {"else", Token::Type::ELSE},
+    {"endif", Token::Type::ENDIF},
+    {"swap", Token::Type::SWAP},
 
-std::map <std::string, TokenType> keywords;
+    {"int", Token::Type::TYPE_INT},
+    {"char", Token::Type::TYPE_CHAR},
+    {"true", Token::Type::TYPE_BOOL},
+    {"false", Token::Type::TYPE_BOOL},
+    {"True", Token::Type::TYPE_BOOL},
+    {"False", Token::Type::TYPE_BOOL},
+    /// !
 
-void initialize_keywords()
-{
-    keywords["var"] = TokenType::VAR;
-    keywords["const"] = TokenType::CONST;
-    keywords["arr"] = TokenType::ARR;
-    keywords["if"] = TokenType::IF;
-    keywords["else"] = TokenType::ELSE;
-    keywords["endif"] = TokenType::ENDIF;
-    keywords["swap"] = TokenType::SWAP;
+    {":=", Token::Type::ASSIGN},
+    {"=", Token::Type::EQUALS},
+    {"<", Token::Type::LESS},
+    {">", Token::Type::GREATER},
+    {"<=", Token::Type::LESS_EQUAL},
+    {">=", Token::Type::GREATER_EQUAL},
 
-    keywords["int"] = TokenType::INT;
-    keywords["char"] = TokenType::CHAR;
-    keywords["bool"] = TokenType::BOOL;
+    {"+", Token::Type::ADD},
+    {"-", Token::Type::SUB},
+    {"*", Token::Type::MUL},
+    {"/", Token::Type::DIV},
+    {"%", Token::Type::MOD},
 
-    keywords[":="] = TokenType::ASSIGN;
-    keywords["="] = TokenType::EQUALS; /// carefull with the next token
-    keywords["<"] = TokenType::LESS;
-    keywords[">"] = TokenType::GREATER;
-    keywords["<="] = TokenType::LESS_EQUAL;
-    keywords[">="] = TokenType::GREATER_EQUAL;
+    {"&", Token::Type::BITWISE_AND},
+    {"|", Token::Type::BITWISE_OR},
+    {"^", Token::Type::BITWISE_XOR},
+    {"~", Token::Type::BITWISE_NOT},
+    {"<<", Token::Type::BITWISE_LEFT_SHIFT},
+    {">>", Token::Type::BITWISE_RIGHT_SHIFT},
 
-    keywords["+"] = TokenType::PLUS;
-    keywords["-"] = TokenType::MINUS;
-    keywords["*"] = TokenType::MULTIPLY;
-    keywords["/"] = TokenType::DIVIDE;
+    {"!", Token::Type::LOGICAL_NOT},
+    {"&&", Token::Type::LOGICAL_AND},
+    {"||", Token::Type::LOGICAL_OR},
 
-    keywords["&"] = TokenType::BITWISE_AND;
-    keywords["|"] = TokenType::BITWISE_OR;
-    keywords["^"] = TokenType::BITWISE_XOR;
+    {":", Token::Type::COLON},
+    {",", Token::Type::COMMA},
+    {"(", Token::Type::LEFT_BRACKET},
+    {")", Token::Type::RIGHT_BRACKET},
 
-    keywords["<<"] = TokenType::SHIFT_LEFT;
-    keywords[">>"] = TokenType::SHIFT_RIGHT;
-    keywords["!"] = TokenType::NOT;
-
-    keywords["&&"] = TokenType::AND;
-    keywords["||"] = TokenType::OR;
-
-    keywords[":"] = TokenType::COLON;
-    keywords[","] = TokenType::COMMA;
-    keywords["("] = TokenType::LEFT_BRACKET;
-    keywords[")"] = TokenType::RIGHT_BRACKET;
-
-    keywords["\n"] = TokenType::END_OF_LINE;
-    keywords["exit"] = TokenType::END_OF_FILE;
-}
+    {"\n", Token::Type::EOLINE},
+    {"exit", Token::Type::EOFILE}
+};
 
 /// 0 - empty space
 /// 1 - starts a word
 /// 2 - starts an integer
 /// 3 - another
+
 int determineType(char sym)
 {
     if(sym == ' ')return 0;
@@ -85,14 +81,20 @@ bool continuesType1(char sym)
     return (sym == '_');
 }
 
-std::vector < Token > Lexer::tokenize()
+
+std::vector<Token> Lexer::tokenize(const std::string& source)
 {
-    initialize_keywords();
-    std::vector < Token > tokens;
+
+    std::vector<Token> tokens;
     int pos = 0, sz = (int)(source.size());
+
+    int last_newline = 0, cnt_newlines = 0;
     while(pos < sz)
     {
-        while(pos < sz && determineType(source[pos]) == 0)pos ++;
+        while(pos < sz && determineType(source[pos]) == 0)
+        {
+            pos ++;
+        }
         if(pos >= sz)break;
         int current_type = determineType(source[pos]);
         std::string curr_value = "";
@@ -107,8 +109,8 @@ std::vector < Token > Lexer::tokenize()
                 pos ++;
             }
             if(keywords.find(curr_value) == keywords.end())
-                tokens.push_back(Token(TokenType::IDENTIFIER, curr_value));
-            else tokens.push_back(Token(keywords[curr_value], curr_value));
+                tokens.push_back(Token(Token::Type::IDENTIFIER, curr_value, cnt_newlines, pos - last_newline));
+            else tokens.push_back(Token(keywords[curr_value], curr_value, cnt_newlines, pos - last_newline));
             continue;
         }
         if(current_type == 2)
@@ -120,12 +122,12 @@ std::vector < Token > Lexer::tokenize()
                 curr_value += source[pos];
                 pos ++;
             }
-            tokens.push_back(Token(TokenType::INTEGER, curr_value));
+            tokens.push_back(Token(Token::Type::LITERAL_INTEGER, curr_value, cnt_newlines, pos - last_newline));
             continue;
         }
         int best_matchpoint = -1;
         std::string best_match = "";
-        for (int matchpoint = pos; matchpoint < (sz, pos + 5); ++ matchpoint)
+        for (int matchpoint = pos; matchpoint < std::min(sz, pos + 5); ++ matchpoint)
         {
             curr_value += source[matchpoint];
             if(keywords.find(curr_value) == keywords.end())continue;
@@ -137,7 +139,15 @@ std::vector < Token > Lexer::tokenize()
             std::cout << "ERROR" << std::endl;
             exit(0);
         }
-        tokens.push_back(Token(keywords[best_match], best_match));
+        for (int ptr = pos; ptr <= best_matchpoint; ++ ptr)
+        {
+            if(source[ptr] == '\n')
+            {
+                cnt_newlines ++;
+                last_newline = ptr;
+            }
+        }
+        tokens.push_back(Token(keywords[best_match], best_match, cnt_newlines, pos - last_newline));
         pos = best_matchpoint + 1;
     }
     return tokens;
