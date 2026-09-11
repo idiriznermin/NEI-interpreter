@@ -26,7 +26,12 @@ public:
         LITERAL_BOOL,
 
         ASSIGN, // :=
-        OPERATOR,
+        OP_COMPARE,
+        OP_ADD,
+        OP_MUL,
+        OP_BITWISE,
+        OP_LOGICAL,
+        OP_NOT,
 
         COLON,
         COMMA,

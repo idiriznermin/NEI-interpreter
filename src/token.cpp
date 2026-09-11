@@ -32,17 +32,22 @@ std::map<Token::Type, std::string> tokenStrings = {
     {Token::Type::ELSE, "else"},
     {Token::Type::ENDIF, "endif"},
 
-    {Token::Type::TYPE_INT, "int"},
-    {Token::Type::TYPE_CHAR, "char"},
-    {Token::Type::TYPE_BOOL, "bool"},
+    {Token::Type::TYPE_INT, "type_int"},
+    {Token::Type::TYPE_CHAR, "type_char"},
+    {Token::Type::TYPE_BOOL, "type_bool"},
 
     {Token::Type::IDENTIFIER, "identifier"},
     {Token::Type::LITERAL_INTEGER, "integer"},
     {Token::Type::LITERAL_CHAR, "char literal"},
     {Token::Type::LITERAL_BOOL, "bool literal"},
 
-    {Token::Type::ASSIGN, ":="},
-    {Token::Type::OPERATOR, "operator"},
+    {Token::Type::ASSIGN, "assign"},
+    {Token::Type::OP_COMPARE, "op_compare"},
+    {Token::Type::OP_ADD, "op_add"},
+    {Token::Type::OP_MUL, "op_mul"},
+    {Token::Type::OP_BITWISE, "op_bitwise"},
+    {Token::Type::OP_LOGICAL, "op_logical"},
+    {Token::Type::OP_NOT, "op_not"},
 
     {Token::Type::COLON, ":"},
     {Token::Type::COMMA, ","},
@@ -74,8 +79,7 @@ void Token::print() const
             std::cout << (value ? "true" : "false");
         else if constexpr (std::is_same_v<T, char>)
             std::cout << "'" << value << "'";
-        else
-            std::cout << value; // std::string, int
+        else std::cout << value;
     }, value);
 
     std::cout << "\n";

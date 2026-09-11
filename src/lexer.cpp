@@ -25,28 +25,30 @@ std::map<std::string, Token::Type> keywords = {
     {"False", Token::Type::TYPE_BOOL},
 
     {":=", Token::Type::ASSIGN},
-    {"=", Token::Type::OPERATOR},
-    {"<", Token::Type::OPERATOR},
-    {">", Token::Type::OPERATOR},
-    {"<=", Token::Type::OPERATOR},
-    {">=", Token::Type::OPERATOR},
 
-    {"+", Token::Type::OPERATOR},
-    {"-", Token::Type::OPERATOR},
-    {"*", Token::Type::OPERATOR},
-    {"/", Token::Type::OPERATOR},
-    {"%", Token::Type::OPERATOR},
+    {"=",  Token::Type::OP_COMPARE},
+    {"<",  Token::Type::OP_COMPARE},
+    {">",  Token::Type::OP_COMPARE},
+    {"<=", Token::Type::OP_COMPARE},
+    {">=", Token::Type::OP_COMPARE},
+    {"!=", Token::Type::OP_COMPARE},   // <- you're missing this one currently, by the way
 
-    {"&", Token::Type::OPERATOR},
-    {"|", Token::Type::OPERATOR},
-    {"^", Token::Type::OPERATOR},
-    {"~", Token::Type::OPERATOR},
-    {"<<", Token::Type::OPERATOR},
-    {">>", Token::Type::OPERATOR},
+    {"+", Token::Type::OP_ADD},
+    {"-", Token::Type::OP_ADD},
+    {"*", Token::Type::OP_MUL},
+    {"/", Token::Type::OP_MUL},
+    {"%", Token::Type::OP_MUL},
 
-    {"!", Token::Type::OPERATOR},
-    {"&&", Token::Type::OPERATOR},
-    {"||", Token::Type::OPERATOR},
+    {"&", Token::Type::OP_BITWISE},
+    {"|", Token::Type::OP_BITWISE},
+    {"^", Token::Type::OP_BITWISE},
+    {"~", Token::Type::OP_BITWISE},
+    {"<<", Token::Type::OP_BITWISE},
+    {">>", Token::Type::OP_BITWISE},
+
+    {"!",  Token::Type::OP_NOT},
+    {"&&", Token::Type::OP_LOGICAL},
+    {"||", Token::Type::OP_LOGICAL},
 
     {":", Token::Type::COLON},
     {",", Token::Type::COMMA},
@@ -81,6 +83,10 @@ bool continuesType1(char sym)
     return false;
 }
 
+int convert_digit(char sym)
+{
+    return (int)(sym - '0');
+}
 
 std::vector<Token> Lexer::tokenize(const std::string& source)
 {
@@ -115,14 +121,17 @@ std::vector<Token> Lexer::tokenize(const std::string& source)
         }
         if (current_type == 2)
         {
-            curr_value += source[pos];
+           int value = 0;
+            value *= 10;
+            value += convert_digit(source[pos]);
             pos ++;
             while (pos < sz && determineType(source[pos]) == 2)
             {
-                curr_value += source[pos];
+                value *= 10;
+                value += convert_digit(source[pos]);
                 pos ++;
             }
-            tokens.push_back(Token(Token::Type::LITERAL_INTEGER, curr_value, cnt_newlines, pos - last_newline));
+            tokens.push_back(Token(Token::Type::LITERAL_INTEGER, value, cnt_newlines, pos - last_newline));
             continue;
         }
         int best_matchpoint = -1;
