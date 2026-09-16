@@ -24,5 +24,10 @@ int main()
     {
         t.print();
     }
+    tokens.pop_back();
+    Parser parser(tokens);
+    std::unique_ptr<ExprNode> res = parser.parse_factor();
+    if(res -> type == ExprType::INTEGER) std::cout << res -> integer << std::endl;
+
     return 0;
 }

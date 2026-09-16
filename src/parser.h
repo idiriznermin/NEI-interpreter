@@ -12,7 +12,8 @@ public:
     Parser(std::vector<Token> tokens):
         tokens(std::move(tokens)), pos(0)
     {}
-    ExprNode* parse_expression();
+    std::unique_ptr<ExprNode> parse_expression();
+    std::unique_ptr<ExprNode> parse_factor(); // fix
 
 private:
     std::vector<Token> tokens;
@@ -36,4 +37,6 @@ private:
         }
         return advance();
     }
+
+    
 };
