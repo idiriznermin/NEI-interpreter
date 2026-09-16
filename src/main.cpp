@@ -1,6 +1,8 @@
 #include "message.h"
 #include "token.h"
 #include "lexer.h"
+#include "parser.h"
+#include "ast.h"
 
 #include <iostream>
 #include <string>
