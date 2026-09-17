@@ -14,6 +14,8 @@ public:
     {}
     std::unique_ptr<ExprNode> parse_expression();
     std::unique_ptr<ExprNode> parse_factor(); // fix
+    std::unique_ptr<ExprNode> parse_term();
+    std::unique_ptr<ExprNode> parse_arith();
 
 private:
     std::vector<Token> tokens;
