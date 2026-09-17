@@ -3,9 +3,80 @@
 #include "ast.h"
 
 #include <vector>
+
 std::unique_ptr<ExprNode> Parser::parse_expression()
 {
-    return parse_arith();
+    return parse_comparison();
+}
+
+std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
+{
+    if(!node)return nullptr;
+
+    auto copy = std::make_unique<ExprNode>();
+    copy -> type = node -> type;
+    copy -> integer = node -> integer;
+    copy -> var_name = node -> var_name;
+    copy -> op = node -> op;
+    copy -> left = clone_expr(node -> left.get());
+    copy -> right = clone_expr(node -> right.get());
+    return copy;
+}
+
+std::unique_ptr<ExprNode> Parser::parse_comparison()
+{
+    std::unique_ptr<ExprNode> first = Parser::parse_arith();
+
+    std::vector<std::unique_ptr<ExprNode>> operands;
+    std::vector<std::string> operations;
+
+    operands.push_back(std::move(first));
+
+    while(Parser::peek().type == Token::Type::OP_COMPARE)
+    {
+        Token curr_op = Parser::advance();
+        operations.push_back(std::get<std::string>(curr_op.value));
+        operands.push_back(Parser::parse_arith());
+    }
+
+    std::unique_ptr<ExprNode> result = nullptr;
+
+    if(operations.empty())
+    {
+        result = std::move(operands[0]);
+        return result;
+    }
+
+    int n = (int)(operations.size());
+    for (int i = 0; i < n; ++ i)
+    {
+        auto cmp = std::make_unique<ExprNode>();
+        cmp -> type = ExprType::BINARY;
+        cmp -> op = operations[i];
+        cmp -> left = std::move(operands[i]);
+
+        if(i == n - 1) cmp -> right = std::move(operands[i+1]);
+        else
+        {
+            cmp -> right = clone_expr(operands[i+1].get());
+        }
+
+        if(result == nullptr)
+        {
+            result = std::move(cmp);
+        }
+        else
+        {
+            auto and_node = std::make_unique<ExprNode>();
+            and_node -> type = ExprType::BINARY;
+            and_node -> op = "&&";
+            and_node -> left = std::move(result);
+            and_node -> right = std::move(cmp);
+            result = std::move(and_node);
+        }
+    }
+
+    return result;
 }
 
 std::unique_ptr<ExprNode> Parser::parse_arith()
@@ -25,6 +96,7 @@ std::unique_ptr<ExprNode> Parser::parse_arith()
     }
     return left;
 }
+
 std::unique_ptr<ExprNode> Parser::parse_term()
 {
     std::unique_ptr<ExprNode> left = Parser::parse_factor();
