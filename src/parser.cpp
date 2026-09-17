@@ -6,7 +6,25 @@
 
 std::unique_ptr<ExprNode> Parser::parse_expression()
 {
-    return parse_comparison();
+    return parse_logical();
+}
+
+std::unique_ptr<ExprNode> Parser::parse_logical()
+{
+    std::unique_ptr<ExprNode> left = Parser::parse_comparison();
+    while(Parser::peek().type == Token::Type::OP_LOGICAL)
+    {
+        Token curr_op = Parser::advance();
+        std::unique_ptr<ExprNode> right = Parser::parse_comparison();
+
+        auto node = std::make_unique<ExprNode>();
+        node -> type = ExprType::BINARY;
+        node -> left = std::move(left);
+        node -> right = std::move(right);
+        node -> op = std::get<std::string>(curr_op.value);
+        left = std::move(node);
+    }
+    return left;
 }
 
 std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)

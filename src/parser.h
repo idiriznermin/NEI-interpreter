@@ -17,6 +17,7 @@ public:
     std::unique_ptr<ExprNode> parse_term();
     std::unique_ptr<ExprNode> parse_arith();
     std::unique_ptr<ExprNode> parse_comparison();
+    std::unique_ptr<ExprNode> parse_logical();
 
 private:
     std::vector<Token> tokens;
