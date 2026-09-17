@@ -24,6 +24,8 @@ private:
     int pos;
 
     Token& peek() {
+        if (pos >= tokens.size())
+             return tokens.back();
         return tokens[pos];
     }
     Token& advance() {

@@ -9,6 +9,7 @@ std::unique_ptr<ExprNode> Parser::parse_expression()
     return parse_logical();
 }
 
+
 std::unique_ptr<ExprNode> Parser::parse_logical()
 {
     std::unique_ptr<ExprNode> left = Parser::parse_comparison();
