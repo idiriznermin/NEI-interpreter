@@ -21,7 +21,7 @@ public:
     std::unique_ptr<ExprNode> parse_logical();
 
     std::unique_ptr<StmtNode> parse_declaration();
-
+    std::unique_ptr<StmtNode> parse_assignment();
 
 private:
     std::vector<Token> tokens;

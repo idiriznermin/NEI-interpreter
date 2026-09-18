@@ -4,6 +4,35 @@
 
 #include <vector>
 
+std::unique_ptr<StmtNode> Parser::parse_assignment()
+{
+    auto node = std::make_unique<StmtNode>();
+    node -> type = StmtType::ASSIGN;
+
+    Token id = Parser::expect(Token::Type::IDENTIFIER, "expected identifier");
+    node -> assign_targets.push_back(std::get<std::string>(id.value));
+
+    while(Parser::peek().type == Token::Type::COMMA)
+    {
+        Parser::advance();
+        id = Parser::expect(Token::Type::IDENTIFIER, "expected identifier");
+        node -> assign_targets.push_back(std::get<std::string>(id.value));
+    }
+
+    Parser::expect(Token::Type::ASSIGN, "expected ':='");
+
+    std::unique_ptr<ExprNode> val = Parser::parse_expression();
+    node -> assign_values.push_back(std::move(val));
+
+    while(Parser::peek().type == Token::Type::COMMA)
+    {
+        Parser::advance();
+        val = Parser::parse_expression();
+        node -> assign_values.push_back(std::move(val));
+    }
+    return node;
+}
+
 std::unique_ptr<StmtNode> Parser::parse_declaration()
 {
     auto node = std::make_unique<StmtNode>();
