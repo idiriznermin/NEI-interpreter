@@ -39,6 +39,8 @@ std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
     copy -> op = node -> op;
     copy -> left = clone_expr(node -> left.get());
     copy -> right = clone_expr(node -> right.get());
+    copy -> unary_op = node -> unary_op;
+    copy -> unary_child = clone_expr(node -> unary_child.get());
     return copy;
 }
 
@@ -118,11 +120,11 @@ std::unique_ptr<ExprNode> Parser::parse_arith()
 
 std::unique_ptr<ExprNode> Parser::parse_term()
 {
-    std::unique_ptr<ExprNode> left = Parser::parse_factor();
+    std::unique_ptr<ExprNode> left = Parser::parse_unary();
     while(Parser::peek().type == Token::Type::OP_MUL)
     {
         Token curr_op = Parser::advance();
-        std::unique_ptr<ExprNode> right = Parser::parse_factor();
+        std::unique_ptr<ExprNode> right = Parser::parse_unary();
 
         auto node = std::make_unique<ExprNode>();
         node -> type = ExprType::BINARY;
@@ -132,6 +134,23 @@ std::unique_ptr<ExprNode> Parser::parse_term()
         left = std::move(node);
     }
     return left;
+}
+
+std::unique_ptr<ExprNode> Parser::parse_unary()
+{
+    Token curr_token = Parser::peek();
+
+    if(curr_token.type == Token::Type::OP_NOT || (curr_token.type == Token::Type::OP_ADD && std::get<std::string>(curr_token.value) == "-"))
+    {
+        Parser::advance();
+        auto node = std::make_unique<ExprNode>();
+        node -> type = ExprType::UNARY;
+        if(curr_token.type == Token::Type::OP_NOT)node -> unary_op = "!";
+        else node -> unary_op = "-";
+        node -> unary_child = Parser::parse_unary();
+        return node;
+    }
+    return Parser::parse_factor();
 }
 std::unique_ptr<ExprNode> Parser::parse_factor()
 {

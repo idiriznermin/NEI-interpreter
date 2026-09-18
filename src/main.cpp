@@ -28,10 +28,14 @@ void print_expr(const ExprNode* node, int depth = 0)
         case ExprType::BINARY:
             std::cout << "OPERATOR: " << node -> op << '\n';
             break;
+        case ExprType::UNARY:
+            std::cout << "OPERATOR: " << node -> unary_op << '\n';
+            break;
     }
 
     print_expr(node->left.get(), depth + 1);
     print_expr(node->right.get(), depth + 1);
+    print_expr(node->unary_child.get(), depth + 1);
 }
 
 int main()

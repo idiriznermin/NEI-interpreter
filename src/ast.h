@@ -7,7 +7,8 @@
 enum class ExprType {
     INTEGER,
     VAR,
-    BINARY
+    BINARY,
+    UNARY
 };
 
 struct ExprNode
@@ -18,6 +19,8 @@ struct ExprNode
     std::string op;
     std::unique_ptr<ExprNode> left;
     std::unique_ptr<ExprNode> right;
+    std::string unary_op;
+    std::unique_ptr<ExprNode> unary_child;
 };
 
 enum class StmtType {
