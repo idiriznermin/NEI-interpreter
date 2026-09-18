@@ -20,6 +20,9 @@ public:
     std::unique_ptr<ExprNode> parse_comparison();
     std::unique_ptr<ExprNode> parse_logical();
 
+    std::unique_ptr<StmtNode> parse_declaration();
+
+
 private:
     std::vector<Token> tokens;
     int pos;
@@ -44,6 +47,4 @@ private:
         }
         return advance();
     }
-
-    
 };
