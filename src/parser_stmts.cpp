@@ -4,6 +4,18 @@
 
 #include <vector>
 
+std::unique_ptr<StmtNode> Parser::parse_statement()
+{
+    if(Parser::peek().type == Token::Type::VAR || Parser::peek().type == Token::Type::CONST)
+        return Parser::parse_declaration();
+    if(Parser::peek().type == Token::Type::IDENTIFIER)
+        return Parser::parse_assignment();
+    if(Parser::peek().type == Token::Type::IF)
+        return Parser::parse_if_statement();
+    std::cout << "Unexpected token at line " << Parser::peek().line << std::endl;
+    exit(1);
+}
+
 std::unique_ptr<StmtNode> Parser::parse_assignment()
 {
     auto node = std::make_unique<StmtNode>();
