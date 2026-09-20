@@ -23,7 +23,9 @@ public:
     std::unique_ptr<StmtNode> parse_declaration();
     std::unique_ptr<StmtNode> parse_assignment();
     std::unique_ptr<StmtNode> parse_statement();
+    std::vector<std::unique_ptr<StmtNode>> parse_statement_list();
     std::unique_ptr<StmtNode> parse_if_statement();
+    std::vector<std::unique_ptr<StmtNode>> parse_program();
 
 private:
     std::vector<Token> tokens;

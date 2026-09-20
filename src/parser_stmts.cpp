@@ -4,6 +4,68 @@
 
 #include <vector>
 
+std::vector <std::unique_ptr<StmtNode>> Parser::parse_program()
+{
+    std::vector <std::unique_ptr<StmtNode>> node;
+    node = parse_statement_list();
+    expect(Token::Type::EOFILE, "expected eofile token");
+    return node;
+}
+
+std::unique_ptr<StmtNode> Parser::parse_if_statement()
+{
+    auto node = std::make_unique<StmtNode>();
+    node -> type = StmtType::IF;
+
+    expect(Token::Type::IF, "expected if token");
+
+    expect(Token::Type::LEFT_BRACKET, "expected left bracket");
+    node -> if_cond = std::move(parse_expression());
+    expect(Token::Type::RIGHT_BRACKET, "expected right bracket");
+
+    node -> if_then_body = parse_statement_list();
+    while (peek().type == Token::Type::EOLINE) advance();
+
+    while(peek().type == Token::Type::ELSEIF)
+    {
+        advance();
+        expect(Token::Type::LEFT_BRACKET, "expected left bracket");
+        node -> elseif_conds.push_back(std::move(parse_expression()));
+        expect(Token::Type::RIGHT_BRACKET, "expected right bracket");
+
+        node -> elseif_bodies.push_back(parse_statement_list());
+        while (peek().type == Token::Type::EOLINE) advance();
+    }
+
+    if(peek().type == Token::Type::ELSE)
+    {
+        advance();
+        node -> else_body = parse_statement_list();
+    }
+
+    while (peek().type == Token::Type::EOLINE) advance();
+    expect(Token::Type::ENDIF, "expected endif token");
+    return node;
+}
+
+std::vector<std::unique_ptr<StmtNode>> Parser::parse_statement_list()
+{
+    std::vector<std::unique_ptr<StmtNode>> statements;
+    while (peek().type == Token::Type::EOLINE) advance();
+
+    while (peek().type != Token::Type::ELSE &&
+           peek().type != Token::Type::EOFILE &&
+           peek().type != Token::Type::ELSEIF &&
+           peek().type != Token::Type::ENDIF)
+        {
+            statements.push_back(std::move(Parser::parse_statement()));
+
+            expect(Token::Type::EOLINE, "expected newline after statement");
+            while (peek().type == Token::Type::EOLINE) advance();
+        }
+    return statements;
+}
+
 std::unique_ptr<StmtNode> Parser::parse_statement()
 {
     if(Parser::peek().type == Token::Type::VAR || Parser::peek().type == Token::Type::CONST)

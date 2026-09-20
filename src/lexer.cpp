@@ -16,6 +16,7 @@ std::map<std::string, Token::Type> keywords = {
     {"if", Token::Type::IF},
     {"else", Token::Type::ELSE},
     {"endif", Token::Type::ENDIF},
+    {"elseif", Token::Type::ELSEIF},
 
     {"int", Token::Type::TYPE_INT},
     {"char", Token::Type::TYPE_CHAR},

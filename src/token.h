@@ -14,6 +14,7 @@ public:
         ARR,
         IF,
         ELSE,
+        ELSEIF,
         ENDIF,
 
         TYPE_INT,
