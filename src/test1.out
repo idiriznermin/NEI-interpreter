@@ -1,0 +1,51 @@
+DECL (var int):
+  NAME: a
+  NAME: b
+    INTEGER: 5
+  NAME: c
+DECL (const int):
+  NAME: d
+    INTEGER: 100
+ASSIGN:
+  TARGET: a
+  OPERATOR: +
+    VARIABLE: b
+    VARIABLE: c
+ASSIGN:
+  TARGET: a
+  TARGET: b
+  VARIABLE: c
+  VARIABLE: d
+IF:
+  COND:
+    OPERATOR: &&
+      OPERATOR: &&
+        OPERATOR: <
+          VARIABLE: a
+          VARIABLE: b
+        OPERATOR: <
+          VARIABLE: b
+          VARIABLE: c
+      OPERATOR: !
+        OPERATOR: =
+          VARIABLE: d
+          INTEGER: 0
+  THEN:
+    ASSIGN:
+      TARGET: a
+      OPERATOR: -
+        INTEGER: 1
+  ELSEIF COND:
+    OPERATOR: =
+      OPERATOR: *
+        VARIABLE: b
+        INTEGER: 2
+      VARIABLE: c
+  ELSEIF BODY:
+    ASSIGN:
+      TARGET: b
+      INTEGER: 0
+  ELSE:
+    ASSIGN:
+      TARGET: c
+      INTEGER: 1
