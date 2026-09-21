@@ -8,10 +8,12 @@
 
 class Parser
 {
+
 public:
     Parser(std::vector<Token> tokens):
         tokens(std::move(tokens)), pos(0)
     {}
+
     std::unique_ptr<ExprNode> parse_expression();
     std::unique_ptr<ExprNode> parse_factor(); // fix
     std::unique_ptr<ExprNode> parse_unary();
@@ -36,12 +38,15 @@ private:
              return tokens.back();
         return tokens[pos];
     }
+
     Token& advance() {
         return tokens[pos++];
     }
+
     bool check(Token::Type t) {
         return (t == peek().type);
     }
+
     Token expect(Token::Type t, const std::string& err_message){
         if(!check(t))
         {
@@ -51,4 +56,5 @@ private:
         }
         return advance();
     }
+
 };

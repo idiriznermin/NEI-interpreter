@@ -9,11 +9,10 @@ std::unique_ptr<ExprNode> Parser::parse_expression()
     return parse_logical();
 }
 
-
 std::unique_ptr<ExprNode> Parser::parse_logical()
 {
     std::unique_ptr<ExprNode> left = Parser::parse_comparison();
-    while(Parser::peek().type == Token::Type::OP_LOGICAL)
+    while (Parser::peek().type == Token::Type::OP_LOGICAL)
     {
         Token curr_op = Parser::advance();
         std::unique_ptr<ExprNode> right = Parser::parse_comparison();
@@ -30,7 +29,8 @@ std::unique_ptr<ExprNode> Parser::parse_logical()
 
 std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
 {
-    if(!node)return nullptr;
+    if (!node)
+        return nullptr;
 
     auto copy = std::make_unique<ExprNode>();
     copy -> type = node -> type;
@@ -41,6 +41,7 @@ std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
     copy -> right = clone_expr(node -> right.get());
     copy -> unary_op = node -> unary_op;
     copy -> unary_child = clone_expr(node -> unary_child.get());
+
     return copy;
 }
 
@@ -53,7 +54,7 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
 
     operands.push_back(std::move(first));
 
-    while(Parser::peek().type == Token::Type::OP_COMPARE)
+    while (Parser::peek().type == Token::Type::OP_COMPARE)
     {
         Token curr_op = Parser::advance();
         operations.push_back(std::get<std::string>(curr_op.value));
@@ -61,8 +62,7 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
     }
 
     std::unique_ptr<ExprNode> result = nullptr;
-
-    if(operations.empty())
+    if (operations.empty())
     {
         result = std::move(operands[0]);
         return result;
@@ -76,7 +76,7 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
         cmp -> op = operations[i];
         cmp -> left = std::move(operands[i]);
 
-        if(i == n - 1) cmp -> right = std::move(operands[i+1]);
+        if (i == n - 1) cmp -> right = std::move(operands[i+1]);
         else
         {
             cmp -> right = clone_expr(operands[i+1].get());
@@ -103,7 +103,8 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
 std::unique_ptr<ExprNode> Parser::parse_arith()
 {
     std::unique_ptr<ExprNode> left = Parser::parse_term();
-    while(Parser::peek().type == Token::Type::OP_ADD)
+
+    while (Parser::peek().type == Token::Type::OP_ADD)
     {
         Token curr_op = Parser::advance();
         std::unique_ptr<ExprNode> right = Parser::parse_term();
@@ -121,7 +122,7 @@ std::unique_ptr<ExprNode> Parser::parse_arith()
 std::unique_ptr<ExprNode> Parser::parse_term()
 {
     std::unique_ptr<ExprNode> left = Parser::parse_unary();
-    while(Parser::peek().type == Token::Type::OP_MUL)
+    while (Parser::peek().type == Token::Type::OP_MUL)
     {
         Token curr_op = Parser::advance();
         std::unique_ptr<ExprNode> right = Parser::parse_unary();
@@ -140,38 +141,41 @@ std::unique_ptr<ExprNode> Parser::parse_unary()
 {
     Token curr_token = Parser::peek();
 
-    if(curr_token.type == Token::Type::OP_NOT || (curr_token.type == Token::Type::OP_ADD && std::get<std::string>(curr_token.value) == "-"))
+    if (curr_token.type == Token::Type::OP_NOT || (curr_token.type == Token::Type::OP_ADD && std::get<std::string>(curr_token.value) == "-"))
     {
         Parser::advance();
+
         auto node = std::make_unique<ExprNode>();
         node -> type = ExprType::UNARY;
         if(curr_token.type == Token::Type::OP_NOT)node -> unary_op = "!";
         else node -> unary_op = "-";
         node -> unary_child = Parser::parse_unary();
+
         return node;
     }
     return Parser::parse_factor();
 }
+
 std::unique_ptr<ExprNode> Parser::parse_factor()
 {
     Token curr_token = Parser::peek();
 
     auto ans = std::make_unique<ExprNode>();
-    if(curr_token.type == Token::Type::LITERAL_INTEGER)
+    if (curr_token.type == Token::Type::LITERAL_INTEGER)
     {
-        ans->type = ExprType::INTEGER;
-        ans->integer = std::get<int>(curr_token.value);
+        ans -> type = ExprType::INTEGER;
+        ans -> integer = std::get<int>(curr_token.value);
         Parser::advance();
         return ans;
     }
-    if(curr_token.type == Token::Type::IDENTIFIER)
+    if (curr_token.type == Token::Type::IDENTIFIER)
     {
         ans->type = ExprType::VAR;
         ans->var_name = std::get<std::string>(curr_token.value);
         Parser::advance();
         return ans;
     }
-    if(curr_token.type == Token::Type::LEFT_BRACKET)
+    if (curr_token.type == Token::Type::LEFT_BRACKET)
     {
         Parser::advance();
         ans = Parser::parse_expression();

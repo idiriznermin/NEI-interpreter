@@ -4,7 +4,7 @@
 
 #include <vector>
 
-std::vector <std::unique_ptr<StmtNode>> Parser::parse_program()
+std::vector<std::unique_ptr<StmtNode>> Parser::parse_program()
 {
     std::vector <std::unique_ptr<StmtNode>> node;
     node = parse_statement_list();
@@ -26,7 +26,7 @@ std::unique_ptr<StmtNode> Parser::parse_if_statement()
     node -> if_then_body = parse_statement_list();
     while (peek().type == Token::Type::EOLINE) advance();
 
-    while(peek().type == Token::Type::ELSEIF)
+    while (peek().type == Token::Type::ELSEIF)
     {
         advance();
         expect(Token::Type::LEFT_BRACKET, "expected left bracket");
@@ -63,16 +63,17 @@ std::vector<std::unique_ptr<StmtNode>> Parser::parse_statement_list()
             expect(Token::Type::EOLINE, "expected newline after statement");
             while (peek().type == Token::Type::EOLINE) advance();
         }
+
     return statements;
 }
 
 std::unique_ptr<StmtNode> Parser::parse_statement()
 {
-    if(Parser::peek().type == Token::Type::VAR || Parser::peek().type == Token::Type::CONST)
+    if (Parser::peek().type == Token::Type::VAR || Parser::peek().type == Token::Type::CONST)
         return Parser::parse_declaration();
-    if(Parser::peek().type == Token::Type::IDENTIFIER)
+    if (Parser::peek().type == Token::Type::IDENTIFIER)
         return Parser::parse_assignment();
-    if(Parser::peek().type == Token::Type::IF)
+    if (Parser::peek().type == Token::Type::IF)
         return Parser::parse_if_statement();
     std::cout << "Unexpected token at line " << Parser::peek().line << std::endl;
     exit(1);
@@ -86,7 +87,7 @@ std::unique_ptr<StmtNode> Parser::parse_assignment()
     Token id = Parser::expect(Token::Type::IDENTIFIER, "expected identifier");
     node -> assign_targets.push_back(std::get<std::string>(id.value));
 
-    while(Parser::peek().type == Token::Type::COMMA)
+    while (Parser::peek().type == Token::Type::COMMA)
     {
         Parser::advance();
         id = Parser::expect(Token::Type::IDENTIFIER, "expected identifier");
@@ -98,7 +99,7 @@ std::unique_ptr<StmtNode> Parser::parse_assignment()
     std::unique_ptr<ExprNode> val = Parser::parse_expression();
     node -> assign_values.push_back(std::move(val));
 
-    while(Parser::peek().type == Token::Type::COMMA)
+    while (Parser::peek().type == Token::Type::COMMA)
     {
         Parser::advance();
         val = Parser::parse_expression();
@@ -114,7 +115,7 @@ std::unique_ptr<StmtNode> Parser::parse_declaration()
     node -> type = StmtType::DECL;
 
     Token curr_token = Parser::advance();
-    if(curr_token.type == Token::Type::CONST)
+    if (curr_token.type == Token::Type::CONST)
     {
         node -> is_const = 1;
     }
@@ -128,7 +129,7 @@ std::unique_ptr<StmtNode> Parser::parse_declaration()
     }
 
     Token type_token = Parser::advance();
-    if(type_token.type == Token::Type::TYPE_BOOL)node -> decl_type =  "bool";
+    if (type_token.type == Token::Type::TYPE_BOOL)node -> decl_type =  "bool";
     else if(type_token.type == Token::Type::TYPE_CHAR)node -> decl_type = "char";
     else if(type_token.type == Token::Type::TYPE_INT)node -> decl_type = "int";
     else {
@@ -138,18 +139,19 @@ std::unique_ptr<StmtNode> Parser::parse_declaration()
 
     Parser::expect(Token::Type::COLON, "expected ':' after type");
 
-    while(Parser::peek().type == Token::Type::IDENTIFIER)
+    while (Parser::peek().type == Token::Type::IDENTIFIER)
     {
         Token id = Parser::advance();
         node -> decl_names.push_back(std::get<std::string>(id.value));
 
-        if(Parser::peek().type == Token::Type::ASSIGN)
+        if (Parser::peek().type == Token::Type::ASSIGN)
         {
             Parser::advance();
             node -> decl_init.push_back(Parser::parse_expression());
         }
         else node -> decl_init.push_back(nullptr);
-        if(Parser::peek().type == Token::Type::COMMA)Parser::advance();
+        
+        if (Parser::peek().type == Token::Type::COMMA)Parser::advance();
         else break;
     }
     return node;
