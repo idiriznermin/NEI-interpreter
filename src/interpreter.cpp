@@ -169,3 +169,10 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
     std::cout << "error with executing"<< std::endl;
     exit(1);
 }
+
+void Interpreter::run(const std::vector<std::unique_ptr<StmtNode>> &program, Environment &env)
+{
+    for (const auto& node: program)
+        execute(node.get(), env);
+    return;
+}
