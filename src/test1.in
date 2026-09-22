@@ -1,13 +1,20 @@
-var int: a, b := 5, c
-const int: d := 100
+var int: a := 6, b := 3, c
+const int: mask := 5
 
-a := b + c
-a, b := c, d
+c := a + mask * b
 
-if (a < b < c && !(d = 0))
-a := -1
-elseif (b * 2 = c)
-b := 0
-else
-c := 1
+if (c > 5 && c < 30)
+if (-a = -6)
+c := c - a
+elseif (a > 0)
+c := ~c
 endif
+b := b + 1
+elseif (c = 0)
+c := 100
+else
+c := -1
+endif
+
+a := a % 5
+exit
