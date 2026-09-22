@@ -14,87 +14,87 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
     if (node == nullptr)
         return 0;
 
-    if (node->type == ExprType::INTEGER)
+    if (node -> type == ExprType::INTEGER)
         return node->integer;
 
-    if (node->type == ExprType::VAR)
+    if (node -> type == ExprType::VAR)
     {
         std::string curr_name = node->var_name;
         return env.get(curr_name);
     }
 
-    if (node->type == ExprType::UNARY)
+    if (node -> type == ExprType::UNARY)
     {
-        int child = evaluate(node->unary_child.get(), env);
-        if (node->unary_op == "-")
+        int child = evaluate(node -> unary_child.get(), env);
+        if (node -> unary_op == "-")
             return (-child);
-        if (node->unary_op == "!")
+        if (node -> unary_op == "!")
             return (!(child));
-        if (node->unary_op == "~")
+        if (node -> unary_op == "~")
             return (~child);
-        std::cout << "invalid unary operation" << std::endl;
+        std::cout << "Error: unknown unary operation - " << node->unary_op << std::endl;
         exit(1);
     }
 
-    int left_child = evaluate(node->left.get(), env);
-    int right_child = evaluate(node->right.get(), env);
+    int left_child = evaluate(node -> left.get(), env);
+    int right_child = evaluate(node -> right.get(), env);
 
-    if (node->op == "+")
+    if (node -> op == "+")
         return left_child + right_child;
-    if (node->op == "-")
+    if (node -> op == "-")
         return left_child - right_child;
-    if (node->op == "*")
+    if (node -> op == "*")
         return left_child * right_child;
 
-    if (node->op == "/")
+    if (node -> op == "/")
     {
         if (right_child == 0)
         {
-            std::cout << "dividing by zero" << std::endl;
+            std::cout << "Error: dividing by zero (" << left_child << " / " << right_child << ")" << std::endl;
             exit(1);
         }
         return left_child / right_child;
     }
-    if (node->op == "%")
+    if (node -> op == "%")
     {
         if (right_child == 0)
         {
-            std::cout << "dividing by zero" << std::endl;
+            std::cout << "Error: modulo by zero (" << left_child << " / " << right_child << ")" << std::endl;
             exit(1);
         }
         return left_child % right_child;
     }
 
-    if (node->op == "&")
+    if (node -> op == "&")
         return (left_child & right_child);
-    if (node->op == "|")
+    if (node -> op == "|")
         return (left_child | right_child);
-    if (node->op == "^")
+    if (node -> op == "^")
         return (left_child ^ right_child);
-    if (node->op == "<<")
+    if (node -> op == "<<")
         return (left_child << right_child);
-    if (node->op == ">>")
+    if (node -> op == ">>")
         return (left_child >> right_child);
 
-    if (node->op == "=")
+    if (node -> op == "=")
         return (left_child == right_child) ? 1 : 0;
-    if (node->op == "!=")
+    if (node -> op == "!=")
         return (left_child != right_child) ? 1 : 0;
-    if (node->op == "<")
+    if (node -> op == "<")
         return (left_child < right_child) ? 1 : 0;
-    if (node->op == ">")
+    if (node -> op == ">")
         return (left_child > right_child) ? 1 : 0;
-    if (node->op == "<=")
+    if (node -> op == "<=")
         return (left_child <= right_child) ? 1 : 0;
-    if (node->op == ">=")
+    if (node -> op == ">=")
         return (left_child >= right_child) ? 1 : 0;
 
-    if (node->op == "&&")
+    if (node -> op == "&&")
         return ((left_child) && (right_child));
-    if (node->op == "||")
+    if (node -> op == "||")
         return ((left_child) || (right_child));
 
-    std::cout << "invalid binary operation" << std::endl;
+    std::cout << "Error: unknown binary operation - " << node -> op << std::endl;
     exit(1);
 }
 
@@ -103,10 +103,11 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
     if (node == nullptr)
         return;
 
-    if (node->type == StmtType::DECL)
+    if (node -> type == StmtType::DECL)
     {
-        bool curr_const = node->is_const;
-        int sz = (int)node->decl_names.size();
+        bool curr_const = node -> is_const;
+        int sz = (int)node -> decl_names.size();
+
         std::vector<int> values;
         for (const auto &node_init : node->decl_init)
         {
@@ -120,28 +121,30 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
         return;
     }
 
-    if (node->type == StmtType::ASSIGN)
+    if (node -> type == StmtType::ASSIGN)
     {
-        int sz_targets = (int)node->assign_targets.size();
-        int sz_values = (int)node->assign_values.size();
+        int sz_targets = (int)node -> assign_targets.size();
+        int sz_values = (int)node -> assign_values.size();
+
         if (sz_targets != sz_values)
         {
-            std::cout << "invalid assign attempt" << std::endl;
+            std::cout << "Error: assignment has " << sz_targets <<  " target(s) but " << sz_values << " value(s)" << std::endl;
             exit(1);
         }
+
         std::vector<int> values;
-        for (const auto &node_value : node->assign_values)
+        for (const auto &node_value : node -> assign_values)
             values.push_back(evaluate(node_value.get(), env));
-        for (int i = 0; i < sz_targets; ++i)
-            env.assign(node->assign_targets[i], values[i]);
+        for (int i = 0; i < sz_targets; ++ i)
+            env.assign(node -> assign_targets[i], values[i]);
         return;
     }
 
-    if (node->type == StmtType::IF)
+    if (node -> type == StmtType::IF)
     {
-        if (evaluate(node->if_cond.get(), env))
+        if (evaluate(node -> if_cond.get(), env))
         {
-            for (const auto &stmt_line : node->if_then_body)
+            for (const auto &stmt_line : node -> if_then_body)
             {
                 execute(stmt_line.get(), env);
             }
@@ -149,24 +152,24 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
         }
 
         int pos = 0;
-        for (const auto &cond : node->elseif_conds)
+        for (const auto &cond : node -> elseif_conds)
         {
             if (evaluate(cond.get(), env))
             {
-                for (const auto &stmt_line : node->elseif_bodies[pos])
+                for (const auto &stmt_line : node -> elseif_bodies[pos])
                     execute(stmt_line.get(), env);
                 return;
             }
-            pos++;
+            pos ++;
         }
-        for (const auto &stmt_line : node->else_body)
+        for (const auto &stmt_line : node -> else_body)
         {
             execute(stmt_line.get(), env);
         }
         return;
     }
 
-    std::cout << "error with executing"<< std::endl;
+    std::cout << "Error: encountered an unknown statement type during execution"<< std::endl;
     exit(1);
 }
 

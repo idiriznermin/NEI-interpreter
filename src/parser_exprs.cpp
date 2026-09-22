@@ -183,10 +183,10 @@ std::unique_ptr<ExprNode> Parser::parse_factor()
         Parser::advance();
         ans = Parser::parse_expression();
 
-        Parser::expect(Token::Type::RIGHT_BRACKET, "expected ')' ");
+        Parser::expect(Token::Type::RIGHT_BRACKET, "Error: expected ')' ");
         return ans;
     }
-    std::cout << "Unexpected token at line " << curr_token.line << std::endl;
+    std::cout << "Error: unexpected token at line " << curr_token.line << std::endl;
     exit(1);
 }
 
