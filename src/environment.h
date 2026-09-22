@@ -20,7 +20,5 @@ public:
     void declare(std::string name, int value, bool is_const);
     int get(std::string name);
     void assign(std::string name, int value);
-
-private:
     std::map<std::string, var_info> variables;
 };
