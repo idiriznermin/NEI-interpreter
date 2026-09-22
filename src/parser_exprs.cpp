@@ -141,14 +141,17 @@ std::unique_ptr<ExprNode> Parser::parse_unary()
 {
     Token curr_token = Parser::peek();
 
-    if (curr_token.type == Token::Type::OP_NOT || (curr_token.type == Token::Type::OP_ADD && std::get<std::string>(curr_token.value) == "-"))
+    if (curr_token.type == Token::Type::OP_NOT ||
+        (curr_token.type == Token::Type::OP_ADD && std::get<std::string>(curr_token.value) == "-") ||
+        (curr_token.type == Token::Type::OP_BITWISE && std::get<std::string>(curr_token.value) == "~"))
     {
         Parser::advance();
 
         auto node = std::make_unique<ExprNode>();
         node -> type = ExprType::UNARY;
         if(curr_token.type == Token::Type::OP_NOT)node -> unary_op = "!";
-        else node -> unary_op = "-";
+        else if(curr_token.type == Token::Type::OP_ADD)node -> unary_op = "-";
+        else node -> unary_op = "~";
         node -> unary_child = Parser::parse_unary();
 
         return node;
