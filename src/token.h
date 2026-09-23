@@ -17,6 +17,9 @@ public:
         ELSEIF,
         ENDIF,
 
+        WHILE,
+        ENDWHILE,
+
         TYPE_INT,
         TYPE_CHAR,
         TYPE_BOOL,

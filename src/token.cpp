@@ -30,7 +30,11 @@ std::map<Token::Type, std::string> tokenStrings = {
     {Token::Type::ARR, "arr"},
     {Token::Type::IF, "if"},
     {Token::Type::ELSE, "else"},
+    {Token::Type::ELSEIF, "elseif"},
     {Token::Type::ENDIF, "endif"},
+
+    {Token::Type::WHILE, "while"},
+    {Token::Type::ENDWHILE, "endwhile"},
 
     {Token::Type::TYPE_INT, "type_int"},
     {Token::Type::TYPE_CHAR, "type_char"},

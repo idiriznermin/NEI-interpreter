@@ -169,6 +169,16 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
         return;
     }
 
+    if (node -> type == StmtType::WHILE)
+    {
+        while(evaluate(node -> while_cond.get(), env))
+        {
+            for (const auto &statement : node -> while_body)
+                execute(statement.get(), env);
+        }
+        return;
+    }
+
     std::cout << "Error: encountered an unknown statement type during execution"<< std::endl;
     exit(1);
 }

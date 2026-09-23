@@ -26,7 +26,8 @@ struct ExprNode
 enum class StmtType {
     DECL,
     ASSIGN,
-    IF
+    IF,
+    WHILE
 };
 
 struct StmtNode
@@ -49,4 +50,8 @@ struct StmtNode
     std::vector<std::unique_ptr<ExprNode>> elseif_conds;
     std::vector<std::vector<std::unique_ptr<StmtNode>>> elseif_bodies;
     std::vector<std::unique_ptr<StmtNode>> else_body;
+
+    /// type = WHILE
+    std::unique_ptr<ExprNode> while_cond;
+    std::vector<std::unique_ptr<StmtNode>> while_body;
 };

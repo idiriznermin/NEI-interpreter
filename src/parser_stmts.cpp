@@ -8,7 +8,24 @@ std::vector<std::unique_ptr<StmtNode>> Parser::parse_program()
 {
     std::vector <std::unique_ptr<StmtNode>> node;
     node = parse_statement_list();
-    expect(Token::Type::EOFILE, "expected eofile token");
+    expect(Token::Type::EOFILE, "Error: expected eofile token");
+    return node;
+}
+
+std::unique_ptr<StmtNode> Parser::parse_while_statement()
+{
+    auto node = std::make_unique<StmtNode>();
+    node -> type = StmtType::WHILE;
+
+    expect(Token::Type::WHILE, "Error: expected while token");
+
+    expect(Token::Type::LEFT_BRACKET, "Error: expected left bracket");
+    node -> while_cond = std::move(parse_expression());
+    expect(Token::Type::RIGHT_BRACKET, "Error: expected right bracket");
+
+    node -> while_body = parse_statement_list();
+    while (peek().type == Token::Type::EOLINE)advance();
+    expect(Token::Type::ENDWHILE, "Error: expected endwhile token");
     return node;
 }
 
@@ -17,11 +34,11 @@ std::unique_ptr<StmtNode> Parser::parse_if_statement()
     auto node = std::make_unique<StmtNode>();
     node -> type = StmtType::IF;
 
-    expect(Token::Type::IF, "expected if token");
+    expect(Token::Type::IF, "Error: expected if token");
 
-    expect(Token::Type::LEFT_BRACKET, "expected left bracket");
+    expect(Token::Type::LEFT_BRACKET, "Error: expected left bracket");
     node -> if_cond = std::move(parse_expression());
-    expect(Token::Type::RIGHT_BRACKET, "expected right bracket");
+    expect(Token::Type::RIGHT_BRACKET, "Error: expected right bracket");
 
     node -> if_then_body = parse_statement_list();
     while (peek().type == Token::Type::EOLINE) advance();
@@ -29,9 +46,9 @@ std::unique_ptr<StmtNode> Parser::parse_if_statement()
     while (peek().type == Token::Type::ELSEIF)
     {
         advance();
-        expect(Token::Type::LEFT_BRACKET, "expected left bracket");
+        expect(Token::Type::LEFT_BRACKET, "Error: expected left bracket");
         node -> elseif_conds.push_back(std::move(parse_expression()));
-        expect(Token::Type::RIGHT_BRACKET, "expected right bracket");
+        expect(Token::Type::RIGHT_BRACKET, "Error: expected right bracket");
 
         node -> elseif_bodies.push_back(parse_statement_list());
         while (peek().type == Token::Type::EOLINE) advance();
@@ -44,7 +61,7 @@ std::unique_ptr<StmtNode> Parser::parse_if_statement()
     }
 
     while (peek().type == Token::Type::EOLINE) advance();
-    expect(Token::Type::ENDIF, "expected endif token");
+    expect(Token::Type::ENDIF, "Error: expected endif token");
     return node;
 }
 
@@ -56,11 +73,12 @@ std::vector<std::unique_ptr<StmtNode>> Parser::parse_statement_list()
     while (peek().type != Token::Type::ELSE &&
            peek().type != Token::Type::EOFILE &&
            peek().type != Token::Type::ELSEIF &&
-           peek().type != Token::Type::ENDIF)
+           peek().type != Token::Type::ENDIF &&
+           peek().type != Token::Type::ENDWHILE)
         {
             statements.push_back(std::move(Parser::parse_statement()));
 
-            expect(Token::Type::EOLINE, "expected newline after statement");
+            expect(Token::Type::EOLINE, "Error: expected newline after statement");
             while (peek().type == Token::Type::EOLINE) advance();
         }
 
@@ -75,7 +93,9 @@ std::unique_ptr<StmtNode> Parser::parse_statement()
         return Parser::parse_assignment();
     if (Parser::peek().type == Token::Type::IF)
         return Parser::parse_if_statement();
-    std::cout << "Unexpected token at line " << Parser::peek().line << std::endl;
+    if (Parser::peek().type == Token::Type::WHILE)
+        return Parser::parse_while_statement();
+    std::cout << "Error: unexpected token at line " << Parser::peek().line << std::endl;
     exit(1);
 }
 
@@ -123,7 +143,7 @@ std::unique_ptr<StmtNode> Parser::parse_declaration()
     {
         node -> is_const = 0;
         if(curr_token.type != Token::Type::VAR){
-             std::cout << "Unexpected token at line" << curr_token.line << std::endl;
+             std::cout << "Error: unexpected token at line" << curr_token.line << std::endl;
              exit(1);
         }
     }

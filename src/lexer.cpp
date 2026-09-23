@@ -17,6 +17,8 @@ std::map<std::string, Token::Type> keywords = {
     {"else", Token::Type::ELSE},
     {"endif", Token::Type::ENDIF},
     {"elseif", Token::Type::ELSEIF},
+    {"while", Token::Type::WHILE},
+    {"endwhile", Token::Type::ENDWHILE},
 
     {"int", Token::Type::TYPE_INT},
     {"char", Token::Type::TYPE_CHAR},
