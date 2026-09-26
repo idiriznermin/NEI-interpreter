@@ -23,6 +23,7 @@ public:
     std::unique_ptr<ExprNode> parse_logical();
 
     std::unique_ptr<StmtNode> parse_declaration();
+    std::unique_ptr<StmtNode> parse_array_declaration(int &arr_const);
     std::unique_ptr<StmtNode> parse_assignment();
     std::unique_ptr<StmtNode> parse_statement();
     std::vector<std::unique_ptr<StmtNode>> parse_statement_list();

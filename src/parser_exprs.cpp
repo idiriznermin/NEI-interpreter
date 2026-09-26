@@ -36,6 +36,10 @@ std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
     copy -> type = node -> type;
     copy -> integer = node -> integer;
     copy -> var_name = node -> var_name;
+
+    copy -> arr_name = node -> arr_name;
+    copy -> arr_index = clone_expr(node -> arr_index.get());
+    
     copy -> op = node -> op;
     copy -> left = clone_expr(node -> left.get());
     copy -> right = clone_expr(node -> right.get());
@@ -173,9 +177,18 @@ std::unique_ptr<ExprNode> Parser::parse_factor()
     }
     if (curr_token.type == Token::Type::IDENTIFIER)
     {
+        advance();
+        if(peek().type == Token::Type::LEFT_SQUARE_BRACKET)
+        {
+            advance();
+            ans -> type = ExprType::ARRAY_ACCESS;
+            ans -> arr_name = std::get<std::string>(curr_token.value);
+            ans -> arr_index = std::move(parse_expression());
+            expect(Token::Type::RIGHT_SQUARE_BRACKET, "Error: expected right square bracket ']'");
+            return ans;
+        }
         ans->type = ExprType::VAR;
         ans->var_name = std::get<std::string>(curr_token.value);
-        Parser::advance();
         return ans;
     }
     if (curr_token.type == Token::Type::LEFT_BRACKET)

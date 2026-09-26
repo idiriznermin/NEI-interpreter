@@ -7,6 +7,7 @@
 enum class ExprType {
     INTEGER,
     VAR,
+    ARRAY_ACCESS,
     BINARY,
     UNARY
 };
@@ -16,6 +17,8 @@ struct ExprNode
     ExprType type;
     int integer;
     std::string var_name;
+    std::string arr_name;
+    std::unique_ptr<ExprNode> arr_index;
     std::string op;
     std::unique_ptr<ExprNode> left;
     std::unique_ptr<ExprNode> right;
@@ -25,9 +28,16 @@ struct ExprNode
 
 enum class StmtType {
     DECL,
+    ARRAY_DECL,
     ASSIGN,
     IF,
     WHILE
+};
+
+struct AssignTarget
+{
+    std::string name;
+    std::unique_ptr<ExprNode> index; /// if nullptr -> plain variable
 };
 
 struct StmtNode
@@ -36,12 +46,20 @@ struct StmtNode
 
     /// type = DECL
     bool is_const;
+
     std::string decl_type;
     std::vector<std::string> decl_names;
     std::vector<std::unique_ptr<ExprNode>> decl_init;
 
+    /// type == ARRAY_DECL
+    int arr_const;
+    std::string arr_decl_type;
+    std::vector<std::string> arr_decl_names;
+    int arr_decl_size;
+    std::vector<std::vector<std::unique_ptr<ExprNode>>> arr_decl_init;
+
     /// type = ASSIGN
-    std::vector<std::string> assign_targets;
+    std::vector<AssignTarget> assign_targets;
     std::vector<std::unique_ptr<ExprNode>> assign_values;
 
     /// type = IF

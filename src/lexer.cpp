@@ -57,6 +57,10 @@ std::map<std::string, Token::Type> keywords = {
     {",", Token::Type::COMMA},
     {"(", Token::Type::LEFT_BRACKET},
     {")", Token::Type::RIGHT_BRACKET},
+    {"[", Token::Type::LEFT_SQUARE_BRACKET},
+    {"]", Token::Type::RIGHT_SQUARE_BRACKET},
+    {"{", Token::Type::LEFT_CURLY_BRACKET},
+    {"}", Token::Type::RIGHT_CURLY_BRACKET},
 
     {"\n", Token::Type::EOLINE},
     {"exit", Token::Type::EOFILE}

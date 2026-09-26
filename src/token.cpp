@@ -57,6 +57,10 @@ std::map<Token::Type, std::string> tokenStrings = {
     {Token::Type::COMMA, ","},
     {Token::Type::LEFT_BRACKET, "("},
     {Token::Type::RIGHT_BRACKET, ")"},
+    {Token::Type::LEFT_SQUARE_BRACKET, "["},
+    {Token::Type::RIGHT_SQUARE_BRACKET, "]"},
+    {Token::Type::LEFT_CURLY_BRACKET, "{"},
+    {Token::Type::RIGHT_CURLY_BRACKET, "}"},
 
     {Token::Type::EOLINE, "eoline"},
     {Token::Type::EOFILE, "eofile"},
