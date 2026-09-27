@@ -35,7 +35,7 @@ std::map<std::string, Token::Type> keywords = {
     {">",  Token::Type::OP_COMPARE},
     {"<=", Token::Type::OP_COMPARE},
     {">=", Token::Type::OP_COMPARE},
-    {"!=", Token::Type::OP_COMPARE},   // <- you're missing this one currently, by the way
+    {"!=", Token::Type::OP_COMPARE}, 
 
     {"+", Token::Type::OP_ADD},
     {"-", Token::Type::OP_ADD},
