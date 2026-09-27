@@ -1,0 +1,6 @@
+cd D:\repos\NEI-interpreter\NEI-interpreter\src
+g++ -std=c++17 -Wall *.cpp -o nei.exe
+nei.exe read_test.nei
+3
+10 20 30
+.\nei.exe read_test.nei --debug

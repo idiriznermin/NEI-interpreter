@@ -25,6 +25,7 @@ Token::Token(Token::Type type, bool value, int line, int col):
 {}
 
 std::map<Token::Type, std::string> tokenStrings = {
+    {Token::Type::READ, "read"},
     {Token::Type::VAR, "var"},
     {Token::Type::CONST, "const"},
     {Token::Type::ARR, "arr"},

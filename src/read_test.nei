@@ -1,0 +1,9 @@
+var int: n := read(), total := 0, i := 0
+var arr<int, 5>: a
+
+while (i < n)
+a[i] := read()
+total := total + a[i]
+i := i + 1
+endwhile
+exit

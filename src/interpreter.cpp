@@ -42,6 +42,17 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
         exit(1);
     }
 
+     if (node->type == ExprType::READ)
+    {
+        int value;
+        if (!(std::cin >> value))
+        {
+            std::cout << "Error: read() expected an integer from input" << std::endl;
+            exit(1);
+        }
+        return value;
+    }
+
     int left_child = evaluate(node->left.get(), env);
     int right_child = evaluate(node->right.get(), env);
 

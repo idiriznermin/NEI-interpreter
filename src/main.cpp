@@ -8,6 +8,9 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 
 void indent(int depth)
 {
@@ -42,6 +45,9 @@ void print_expr(const ExprNode *node, int depth = 0)
     case ExprType::UNARY:
         std::cout << "UNARY OPERATOR: " << node->unary_op << '\n';
         break;
+    case ExprType::READ:
+        std::cout << "READ()\n";
+        break;
     }
 
     print_expr(node->left.get(), depth + 1);
@@ -50,6 +56,18 @@ void print_expr(const ExprNode *node, int depth = 0)
 }
 
 void print_body(const std::vector<std::unique_ptr<StmtNode>> &body, int depth);
+
+void print_target(const AssignTarget &target, int depth)
+{
+    indent(depth);
+    std::cout << "TARGET: " << target.name << '\n';
+    if (target.index)
+    {
+        indent(depth + 1);
+        std::cout << "INDEX:\n";
+        print_expr(target.index.get(), depth + 2);
+    }
+}
 
 void print_stmt(const StmtNode *node, int depth = 0)
 {
@@ -102,16 +120,7 @@ void print_stmt(const StmtNode *node, int depth = 0)
     {
         std::cout << "ASSIGN:\n";
         for (const auto &target : node->assign_targets)
-        {
-            indent(depth + 1);
-            std::cout << "TARGET: " << target.name << '\n';
-            if (target.index)
-            {
-                indent(depth + 2);
-                std::cout << "INDEX:\n";
-                print_expr(target.index.get(), depth + 3);
-            }
-        }
+            print_target(target, depth + 1);
         indent(depth + 1);
         std::cout << "VALUES:\n";
         for (const auto &value : node->assign_values)
@@ -162,6 +171,7 @@ void print_stmt(const StmtNode *node, int depth = 0)
         print_body(node->while_body, depth + 2);
         break;
     }
+
     }
 }
 
@@ -171,29 +181,42 @@ void print_body(const std::vector<std::unique_ptr<StmtNode>> &body, int depth)
         print_stmt(stmt.get(), depth);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    /// g++ main.cpp environment.cpp interpreter.cpp lexer.cpp message.cpp parser_exprs.cpp parser_stmts.cpp token.cpp -o nei.exe
-    // Message msg("NYA Hello World");
-    // msg.print();
+    if (argc < 2)
+    {
+        std::cout << "Usage: " << argv[0] << " <file.nei> [--debug]" << std::endl;
+        return 1;
+    }
 
-    std::string source(
-        std::istreambuf_iterator<char>(std::cin),
-        std::istreambuf_iterator<char>());
+    std::ifstream file(argv[1]);
+    if (!file)
+    {
+        std::cout << "Error: could not open file '" << argv[1] << "'" << std::endl;
+        return 1;
+    }
+
+    bool debug = (argc >= 3 && std::string(argv[2]) == "--debug");
+
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string source = buffer.str();
+    source.erase(std::remove(source.begin(), source.end(), '\r'), source.end());
 
     Lexer lexer;
     std::vector<Token> tokens = lexer.tokenize(source);
 
-    // uncomment if you want to see the tokens too
-    // for (Token t : tokens)
-    //     t.print();
+    if (debug)
+        for (const Token &t : tokens)
+            t.print();
 
     Parser parser(tokens);
     auto program = parser.parse_program();
 
-    for (const auto &stmt : program)
-        print_stmt(stmt.get());
-    
+    if (debug)
+        for (const auto &stmt : program)
+            print_stmt(stmt.get());
+
     Environment env;
     Interpreter inter;
     inter.run(program, env);
@@ -208,24 +231,6 @@ int main()
             std::cout << (i ? ", " : "") << info.values[i];
         std::cout << "}" << (info.is_const ? " (const)" : "") << '\n';
     }
-    /*std::string source(
-        std::istreambuf_iterator<char>(std::cin),
-        std::istreambuf_iterator<char>());
 
-    Lexer lexer;
-    std::vector<Token> tokens = lexer.tokenize(source);
-
-    for (Token t : tokens)
-    {
-        t.print();
-    }
-    Parser parser(tokens);
-    auto program = parser.parse_program();
-    Environment env;
-    Interpreter inter;
-    inter.run(program, env);
-    for (auto &[key, value]: env.variables)
-        std::cout << key << " " << value.value << " and " << value.is_const << std::endl;
-*/
     return 0;
 }

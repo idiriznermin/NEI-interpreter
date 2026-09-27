@@ -9,6 +9,8 @@ class Token
 public:
     enum class Type
     {
+
+        READ,
         VAR,
         CONST,
         ARR,

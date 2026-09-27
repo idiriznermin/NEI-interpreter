@@ -9,6 +9,31 @@ std::unique_ptr<ExprNode> Parser::parse_expression()
     return parse_logical();
 }
 
+
+std::unique_ptr<ExprNode> Parser::parse_value()
+{
+    if (peek().type != Token::Type::READ)
+        return parse_expression();
+
+    Token read_token = advance();
+    expect(Token::Type::LEFT_BRACKET, "Error: expected '(' after read");
+    expect(Token::Type::RIGHT_BRACKET, "Error: expected ')' after read(");
+
+    Token::Type next = peek().type;
+    if (next != Token::Type::COMMA &&
+        next != Token::Type::EOLINE &&
+        next != Token::Type::RIGHT_CURLY_BRACKET)
+    {
+        std::cout << "Error at line " << read_token.line
+                  << ": read() must be the entire value, it cannot be part of an expression" << std::endl;
+        exit(1);
+    }
+
+    auto node = std::make_unique<ExprNode>();
+    node->type = ExprType::READ;
+    return node;
+}
+
 std::unique_ptr<ExprNode> Parser::parse_logical()
 {
     std::unique_ptr<ExprNode> left = Parser::parse_comparison();
@@ -39,7 +64,7 @@ std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
 
     copy -> arr_name = node -> arr_name;
     copy -> arr_index = clone_expr(node -> arr_index.get());
-    
+
     copy -> op = node -> op;
     copy -> left = clone_expr(node -> left.get());
     copy -> right = clone_expr(node -> right.get());
@@ -183,7 +208,7 @@ std::unique_ptr<ExprNode> Parser::parse_factor()
             advance();
             ans -> type = ExprType::ARRAY_ACCESS;
             ans -> arr_name = std::get<std::string>(curr_token.value);
-            ans -> arr_index = std::move(parse_expression());
+            ans -> arr_index = parse_expression();
             expect(Token::Type::RIGHT_SQUARE_BRACKET, "Error: expected right square bracket ']'");
             return ans;
         }
@@ -199,7 +224,12 @@ std::unique_ptr<ExprNode> Parser::parse_factor()
         Parser::expect(Token::Type::RIGHT_BRACKET, "Error: expected ')' ");
         return ans;
     }
+    if (curr_token.type == Token::Type::READ)
+    {
+        std::cout << "Error at line " << curr_token.line
+                  << ": read() can only be used as the entire value, e.g. a := read()" << std::endl;
+        exit(1);
+    }
     std::cout << "Error: unexpected token at line " << curr_token.line << std::endl;
     exit(1);
 }
-

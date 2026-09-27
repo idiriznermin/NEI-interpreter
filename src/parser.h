@@ -16,6 +16,7 @@ public:
 
     std::unique_ptr<ExprNode> parse_expression();
     std::unique_ptr<ExprNode> parse_factor(); // fix
+    std::unique_ptr<ExprNode> parse_value();
     std::unique_ptr<ExprNode> parse_unary();
     std::unique_ptr<ExprNode> parse_term();
     std::unique_ptr<ExprNode> parse_arith();

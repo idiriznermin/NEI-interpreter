@@ -9,7 +9,8 @@ enum class ExprType {
     VAR,
     ARRAY_ACCESS,
     BINARY,
-    UNARY
+    UNARY,
+    READ
 };
 
 struct ExprNode
@@ -31,7 +32,7 @@ enum class StmtType {
     ARRAY_DECL,
     ASSIGN,
     IF,
-    WHILE
+    WHILE,
 };
 
 struct AssignTarget

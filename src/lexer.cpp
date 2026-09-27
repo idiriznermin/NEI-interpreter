@@ -10,6 +10,7 @@
 Lexer::Lexer() = default;
 
 std::map<std::string, Token::Type> keywords = {
+    {"read", Token::Type::READ},
     {"var", Token::Type::VAR},
     {"const", Token::Type::CONST},
     {"arr", Token::Type::ARR},

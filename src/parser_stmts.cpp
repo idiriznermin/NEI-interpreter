@@ -140,13 +140,13 @@ std::unique_ptr<StmtNode> Parser::parse_assignment()
 
     Parser::expect(Token::Type::ASSIGN, "Error: expected ':='");
 
-    std::unique_ptr<ExprNode> val = Parser::parse_expression();
+    std::unique_ptr<ExprNode> val = Parser::parse_value();
     node->assign_values.push_back(std::move(val));
 
     while (Parser::peek().type == Token::Type::COMMA)
     {
         Parser::advance();
-        val = Parser::parse_expression();
+        val = Parser::parse_value();
         node->assign_values.push_back(std::move(val));
     }
     return node;
@@ -274,11 +274,11 @@ std::unique_ptr<StmtNode> Parser::parse_declaration()
         Token id = Parser::advance();
         node->decl_names.push_back(std::get<std::string>(id.value));
 
-        
+
         if (Parser::peek().type == Token::Type::ASSIGN)
         {
             Parser::advance();
-            node->decl_init.push_back(Parser::parse_expression());
+            node->decl_init.push_back(Parser::parse_value());
         }
         else
             node->decl_init.push_back(nullptr);
