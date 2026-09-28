@@ -1,0 +1,7 @@
+var int: a := 6, b := 3
+var int: r1 := a & b, r2 := a | b, r3 := a ^ b
+var int: r4 := 1 << 4, r5 := 40 >> 2
+var int: r6 := a & 1 = 0
+var int: r7 := 1 + 2 << 1
+var int: r8 := a | b & 1
+exit
