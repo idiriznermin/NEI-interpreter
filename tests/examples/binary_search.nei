@@ -1,0 +1,23 @@
+var int: n := read(), i := 0
+var arr<int, 20>: a
+
+while (i < n)
+    a[i] := read()
+    i := i + 1
+endwhile
+
+var int: x := read()
+var int: left := 0, right := n - 1, mid := 0, found := 0, pos := -1
+
+while (left <= right && found = 0)
+    mid := (left + right)/2
+    if (a[mid] = x)
+    found := 1
+    pos := mid
+    elseif (a[mid] < x)
+    left := mid + 1
+    else
+    right := mid - 1
+    endif
+endwhile
+exit
