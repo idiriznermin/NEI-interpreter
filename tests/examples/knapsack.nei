@@ -1,0 +1,22 @@
+var int: n := read(), cap := read(), i := 0, w := 0
+var arr<int, 4>: weight, value
+var arr<int, 8>: dp
+
+while (i < n)
+    weight[i] := read()
+    value[i] := read()
+    i := i + 1
+endwhile
+
+i := 0
+while(i < n)
+    w := cap
+    while (w >= weight[i])
+        if(dp[w - weight[i]] + value[i] > dp[w])
+            dp[w] := dp[w - weight[i]] + value[i]
+        endif
+        w := w - 1
+    endwhile
+    i := i + 1
+endwhile
+exit

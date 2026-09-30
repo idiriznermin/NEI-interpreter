@@ -1,0 +1,38 @@
+const int: inf := 1000000
+var int: n := read(), m := read(), i := 0, j := 0, k := 0, u := 0, v := 0, w := 0
+var arr<int, 16>: d
+
+while (i < n * n)
+    d[i] := inf
+    i := i + 1
+endwhile
+
+i := 0
+while (i < n)
+    d[i * n + i] := 0
+    i := i + 1
+endwhile
+
+i := 0
+while (i < m)
+    u, v, w := read(), read(), read()
+    d[u * n + v] := w
+    i := i + 1
+endwhile
+
+k := 0
+while (k < n)
+    i := 0
+    while (i < n)
+        j := 0
+        while (j < n)
+            if (d[i * n + k] + d[k * n + j] < d[i * n + j])
+                d[i * n + j] := d[i * n + k] + d[k * n + j]
+            endif
+            j := j + 1
+        endwhile
+        i := i + 1
+    endwhile
+    k := k + 1
+endwhile
+exit

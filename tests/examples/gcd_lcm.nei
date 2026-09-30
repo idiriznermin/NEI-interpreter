@@ -1,0 +1,10 @@
+var int: a := read(), b := read()
+var int: x := a, y := b, gcd := 0, lcm := 0
+
+while (y > 0)
+    x, y := y, x % y
+endwhile
+
+gcd := x
+lcm := a / gcd * b
+exit
