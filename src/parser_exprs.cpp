@@ -9,7 +9,6 @@ std::unique_ptr<ExprNode> Parser::parse_expression()
     return parse_logical();
 }
 
-
 std::unique_ptr<ExprNode> Parser::parse_value()
 {
     if (peek().type != Token::Type::READ)
@@ -43,33 +42,33 @@ std::unique_ptr<ExprNode> Parser::parse_logical()
         std::unique_ptr<ExprNode> right = Parser::parse_comparison();
 
         auto node = std::make_unique<ExprNode>();
-        node -> type = ExprType::BINARY;
-        node -> left = std::move(left);
-        node -> right = std::move(right);
-        node -> op = std::get<std::string>(curr_op.value);
+        node->type = ExprType::BINARY;
+        node->left = std::move(left);
+        node->right = std::move(right);
+        node->op = std::get<std::string>(curr_op.value);
         left = std::move(node);
     }
     return left;
 }
 
-std::unique_ptr<ExprNode> clone_expr(const ExprNode* node)
+std::unique_ptr<ExprNode> clone_expr(const ExprNode *node)
 {
     if (!node)
         return nullptr;
 
     auto copy = std::make_unique<ExprNode>();
-    copy -> type = node -> type;
-    copy -> integer = node -> integer;
-    copy -> var_name = node -> var_name;
+    copy->type = node->type;
+    copy->integer = node->integer;
+    copy->var_name = node->var_name;
 
-    copy -> arr_name = node -> arr_name;
-    copy -> arr_index = clone_expr(node -> arr_index.get());
+    copy->arr_name = node->arr_name;
+    copy->arr_index = clone_expr(node->arr_index.get());
 
-    copy -> op = node -> op;
-    copy -> left = clone_expr(node -> left.get());
-    copy -> right = clone_expr(node -> right.get());
-    copy -> unary_op = node -> unary_op;
-    copy -> unary_child = clone_expr(node -> unary_child.get());
+    copy->op = node->op;
+    copy->left = clone_expr(node->left.get());
+    copy->right = clone_expr(node->right.get());
+    copy->unary_op = node->unary_op;
+    copy->unary_child = clone_expr(node->unary_child.get());
 
     return copy;
 }
@@ -98,30 +97,31 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
     }
 
     int n = (int)(operations.size());
-    for (int i = 0; i < n; ++ i)
+    for (int i = 0; i < n; ++i)
     {
         auto cmp = std::make_unique<ExprNode>();
-        cmp -> type = ExprType::BINARY;
-        cmp -> op = operations[i];
-        cmp -> left = std::move(operands[i]);
+        cmp->type = ExprType::BINARY;
+        cmp->op = operations[i];
+        cmp->left = std::move(operands[i]);
 
-        if (i == n - 1) cmp -> right = std::move(operands[i+1]);
+        if (i == n - 1)
+            cmp->right = std::move(operands[i + 1]);
         else
         {
-            cmp -> right = clone_expr(operands[i+1].get());
+            cmp->right = clone_expr(operands[i + 1].get());
         }
 
-        if(result == nullptr)
+        if (result == nullptr)
         {
             result = std::move(cmp);
         }
         else
         {
             auto and_node = std::make_unique<ExprNode>();
-            and_node -> type = ExprType::BINARY;
-            and_node -> op = "&&";
-            and_node -> left = std::move(result);
-            and_node -> right = std::move(cmp);
+            and_node->type = ExprType::BINARY;
+            and_node->op = "&&";
+            and_node->left = std::move(result);
+            and_node->right = std::move(cmp);
             result = std::move(and_node);
         }
     }
@@ -132,7 +132,7 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
 bool Parser::check_bitwise(const std::string &op)
 {
     return (peek().type == Token::Type::OP_BITWISE &&
-           std::get<std::string>(peek().value) == op);
+            std::get<std::string>(peek().value) == op);
 }
 
 std::unique_ptr<ExprNode> Parser::parse_bit_or()
@@ -217,10 +217,10 @@ std::unique_ptr<ExprNode> Parser::parse_arith()
         std::unique_ptr<ExprNode> right = Parser::parse_term();
 
         auto node = std::make_unique<ExprNode>();
-        node -> type = ExprType::BINARY;
-        node -> left = std::move(left);
-        node -> right = std::move(right);
-        node -> op = std::get<std::string>(curr_op.value);
+        node->type = ExprType::BINARY;
+        node->left = std::move(left);
+        node->right = std::move(right);
+        node->op = std::get<std::string>(curr_op.value);
         left = std::move(node);
     }
     return left;
@@ -235,10 +235,10 @@ std::unique_ptr<ExprNode> Parser::parse_term()
         std::unique_ptr<ExprNode> right = Parser::parse_unary();
 
         auto node = std::make_unique<ExprNode>();
-        node -> type = ExprType::BINARY;
-        node -> left = std::move(left);
-        node -> right = std::move(right);
-        node -> op = std::get<std::string>(curr_op.value);
+        node->type = ExprType::BINARY;
+        node->left = std::move(left);
+        node->right = std::move(right);
+        node->op = std::get<std::string>(curr_op.value);
         left = std::move(node);
     }
     return left;
@@ -255,11 +255,14 @@ std::unique_ptr<ExprNode> Parser::parse_unary()
         Parser::advance();
 
         auto node = std::make_unique<ExprNode>();
-        node -> type = ExprType::UNARY;
-        if(curr_token.type == Token::Type::OP_NOT)node -> unary_op = "!";
-        else if(curr_token.type == Token::Type::OP_ADD)node -> unary_op = "-";
-        else node -> unary_op = "~";
-        node -> unary_child = Parser::parse_unary();
+        node->type = ExprType::UNARY;
+        if (curr_token.type == Token::Type::OP_NOT)
+            node->unary_op = "!";
+        else if (curr_token.type == Token::Type::OP_ADD)
+            node->unary_op = "-";
+        else
+            node->unary_op = "~";
+        node->unary_child = Parser::parse_unary();
 
         return node;
     }
@@ -273,20 +276,20 @@ std::unique_ptr<ExprNode> Parser::parse_factor()
     auto ans = std::make_unique<ExprNode>();
     if (curr_token.type == Token::Type::LITERAL_INTEGER)
     {
-        ans -> type = ExprType::INTEGER;
-        ans -> integer = std::get<int>(curr_token.value);
+        ans->type = ExprType::INTEGER;
+        ans->integer = std::get<int>(curr_token.value);
         Parser::advance();
         return ans;
     }
     if (curr_token.type == Token::Type::IDENTIFIER)
     {
         advance();
-        if(peek().type == Token::Type::LEFT_SQUARE_BRACKET)
+        if (peek().type == Token::Type::LEFT_SQUARE_BRACKET)
         {
             advance();
-            ans -> type = ExprType::ARRAY_ACCESS;
-            ans -> arr_name = std::get<std::string>(curr_token.value);
-            ans -> arr_index = parse_expression();
+            ans->type = ExprType::ARRAY_ACCESS;
+            ans->arr_name = std::get<std::string>(curr_token.value);
+            ans->arr_index = parse_expression();
             expect(Token::Type::RIGHT_SQUARE_BRACKET, "Error: expected right square bracket ']'");
             return ans;
         }
@@ -306,6 +309,12 @@ std::unique_ptr<ExprNode> Parser::parse_factor()
     {
         std::cout << "Error at line " << curr_token.line
                   << ": read() can only be used as the entire value, e.g. a := read()" << std::endl;
+        exit(1);
+    }
+    if (curr_token.type == Token::Type::LITERAL_STRING)
+    {
+        std::cout << "Error at line " << curr_token.line
+                  << ": strings can only be used inside print()" << std::endl;
         exit(1);
     }
     std::cout << "Error: unexpected token at line " << curr_token.line << std::endl;

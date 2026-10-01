@@ -101,6 +101,8 @@ std::unique_ptr<StmtNode> Parser::parse_statement()
         return Parser::parse_if_statement();
     if (Parser::peek().type == Token::Type::WHILE)
         return Parser::parse_while_statement();
+    if (peek().type == Token::Type::PRINT)
+        return parse_print_statement();
     std::cout << "Error: unexpected token at line " << Parser::peek().line << std::endl;
     exit(1);
 }
@@ -288,5 +290,36 @@ std::unique_ptr<StmtNode> Parser::parse_declaration()
         else
             break;
     }
+    return node;
+}
+
+PrintArg Parser::parse_print_arg()
+{
+    PrintArg arg;
+    if(peek().type == Token::Type::LITERAL_STRING)
+        arg.text = std::get<std::string>(advance().value);
+    else
+        arg.expr = parse_expression();
+    return arg;
+}
+
+std::unique_ptr<StmtNode> Parser::parse_print_statement()
+{
+    auto node = std::make_unique<StmtNode>();
+    node -> type = StmtType::PRINT;
+    expect(Token::Type::PRINT, "Error: expected 'print'");
+    expect(Token::Type::LEFT_BRACKET, "Error: expected '(' after print");
+
+    if(peek().type != Token::Type::RIGHT_BRACKET)
+    {
+        node -> print_args.push_back(parse_print_arg());
+        while(peek().type == Token::Type::COMMA)
+        {
+            advance();
+            node -> print_args.push_back(parse_print_arg());
+        }
+    }
+
+    expect(Token::Type::RIGHT_BRACKET, "Error: expected ')' after print arguments");
     return node;
 }

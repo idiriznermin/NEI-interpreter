@@ -227,6 +227,25 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
         return;
     }
 
+    if (node -> type == StmtType::PRINT)
+    {
+        std::vector<std::string> pieces;
+        for (const auto &arg: node->print_args)
+        {
+            if (arg.expr)
+                pieces.push_back(std::to_string(evaluate(arg.expr.get(), env)));
+            else pieces.push_back(arg.text);
+        }
+
+        for (int i = 0; i < (int)pieces.size(); ++ i)
+        {
+            if(i)std::cout << " ";
+            std::cout << pieces[i];
+        }
+        std::cout << '\n';
+        return;
+    }
+    
     std::cout << "Error: encountered an unknown statement type during execution" << std::endl;
     exit(1);
 }

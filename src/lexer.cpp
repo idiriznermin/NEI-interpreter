@@ -11,6 +11,7 @@ Lexer::Lexer() = default;
 
 std::map<std::string, Token::Type> keywords = {
     {"read", Token::Type::READ},
+    {"print", Token::Type::PRINT},
     {"var", Token::Type::VAR},
     {"const", Token::Type::CONST},
     {"arr", Token::Type::ARR},
@@ -30,12 +31,12 @@ std::map<std::string, Token::Type> keywords = {
 
     {":=", Token::Type::ASSIGN},
 
-    {"=",  Token::Type::OP_COMPARE},
-    {"<",  Token::Type::OP_COMPARE},
-    {">",  Token::Type::OP_COMPARE},
+    {"=", Token::Type::OP_COMPARE},
+    {"<", Token::Type::OP_COMPARE},
+    {">", Token::Type::OP_COMPARE},
     {"<=", Token::Type::OP_COMPARE},
     {">=", Token::Type::OP_COMPARE},
-    {"!=", Token::Type::OP_COMPARE}, 
+    {"!=", Token::Type::OP_COMPARE},
 
     {"+", Token::Type::OP_ADD},
     {"-", Token::Type::OP_ADD},
@@ -50,7 +51,7 @@ std::map<std::string, Token::Type> keywords = {
     {"<<", Token::Type::OP_BITWISE},
     {">>", Token::Type::OP_BITWISE},
 
-    {"!",  Token::Type::OP_NOT},
+    {"!", Token::Type::OP_NOT},
     {"&&", Token::Type::OP_LOGICAL},
     {"||", Token::Type::OP_LOGICAL},
 
@@ -64,9 +65,7 @@ std::map<std::string, Token::Type> keywords = {
     {"}", Token::Type::RIGHT_CURLY_BRACKET},
 
     {"\n", Token::Type::EOLINE},
-    {"exit", Token::Type::EOFILE}
-};
-
+    {"exit", Token::Type::EOFILE}};
 
 /// 0 - empty space
 /// 1 - starts a word
@@ -75,19 +74,27 @@ std::map<std::string, Token::Type> keywords = {
 
 int determineType(char sym)
 {
-    if(sym == ' ')return 0;
-    if(sym >= 'a' && sym <= 'z')return 1;
-    if(sym >= 'A' && sym <= 'Z')return 1;
-    if(sym >= '0' && sym <= '9')return 2;
+    if (sym == ' ')
+        return 0;
+    if (sym >= 'a' && sym <= 'z')
+        return 1;
+    if (sym >= 'A' && sym <= 'Z')
+        return 1;
+    if (sym >= '0' && sym <= '9')
+        return 2;
     return 3;
 }
 
 bool continuesType1(char sym)
 {
-    if(sym >= 'a' && sym <= 'z')return true;
-    if(sym >= 'A' && sym <= 'Z')return true;
-    if(sym >= '0' && sym <= '9')return true;
-    if(sym == '_')return true;
+    if (sym >= 'a' && sym <= 'z')
+        return true;
+    if (sym >= 'A' && sym <= 'Z')
+        return true;
+    if (sym >= '0' && sym <= '9')
+        return true;
+    if (sym == '_')
+        return true;
     return false;
 }
 
@@ -96,7 +103,7 @@ int convert_digit(char sym)
     return (int)(sym - '0');
 }
 
-std::vector<Token> Lexer::tokenize(const std::string& source)
+std::vector<Token> Lexer::tokenize(const std::string &source)
 {
 
     std::vector<Token> tokens;
@@ -107,47 +114,69 @@ std::vector<Token> Lexer::tokenize(const std::string& source)
     {
         while (pos < sz && determineType(source[pos]) == 0)
         {
-            pos ++;
+            pos++;
         }
-        if (pos >= sz) break;
+        if (pos >= sz)
+            break;
+
+        if (source[pos] == '"')
+        {
+            pos++;
+            std::string text = "";
+            while (pos < sz && source[pos] != '"' && source[pos] != '\n')
+            {
+                text += source[pos];
+                pos++;
+            }
+            if (pos >= sz || source[pos] == '\n')
+            {
+                std::cout << "Error at line " << cnt_newlines << ": unterminated string" << std::endl;
+                exit(1);
+            }
+            pos ++;
+            tokens.push_back(Token(Token::Type::LITERAL_STRING, text, cnt_newlines, pos - last_newline));
+            continue;
+        }
         int current_type = determineType(source[pos]);
         std::string curr_value = "";
 
         if (current_type == 1)
         {
             curr_value += source[pos];
-            pos ++;
+            pos++;
             while (pos < sz && continuesType1(source[pos]))
             {
                 curr_value += source[pos];
-                pos ++;
+                pos++;
             }
             if (keywords.find(curr_value) == keywords.end())
                 tokens.push_back(Token(Token::Type::IDENTIFIER, curr_value, cnt_newlines, pos - last_newline));
-            else tokens.push_back(Token(keywords[curr_value], curr_value, cnt_newlines, pos - last_newline));
+            else
+                tokens.push_back(Token(keywords[curr_value], curr_value, cnt_newlines, pos - last_newline));
             continue;
         }
         if (current_type == 2)
         {
-           int value = 0;
+            int value = 0;
             value *= 10;
             value += convert_digit(source[pos]);
-            pos ++;
+            pos++;
             while (pos < sz && determineType(source[pos]) == 2)
             {
                 value *= 10;
                 value += convert_digit(source[pos]);
-                pos ++;
+                pos++;
             }
             tokens.push_back(Token(Token::Type::LITERAL_INTEGER, value, cnt_newlines, pos - last_newline));
             continue;
         }
         int best_matchpoint = -1;
         std::string best_match = "";
-        for (int matchpoint = pos; matchpoint < std::min(sz, pos + 5); ++ matchpoint)
+        for (int matchpoint = pos; matchpoint < std::min(sz, pos + 5); ++matchpoint)
         {
             curr_value += source[matchpoint];
-            if(keywords.find(curr_value) == keywords.end())continue;
+            if (keywords.find(curr_value) == keywords.end())
+                continue;
             best_matchpoint = matchpoint;
             best_match = curr_value;
         }
@@ -156,11 +185,11 @@ std::vector<Token> Lexer::tokenize(const std::string& source)
             std::cout << "ERROR" << std::endl;
             exit(0);
         }
-        for (int ptr = pos; ptr <= best_matchpoint; ++ ptr)
+        for (int ptr = pos; ptr <= best_matchpoint; ++ptr)
         {
-            if(source[ptr] == '\n')
+            if (source[ptr] == '\n')
             {
-                cnt_newlines ++;
+                cnt_newlines++;
                 last_newline = ptr;
             }
         }

@@ -171,7 +171,21 @@ void print_stmt(const StmtNode *node, int depth = 0)
         print_body(node->while_body, depth + 2);
         break;
     }
-
+    case StmtType::PRINT:
+    {
+        std::cout << "PRINT:\n";
+        for (const auto &arg : node->print_args)
+        {
+            if (arg.expr)
+                print_expr(arg.expr.get(), depth + 1);
+            else
+            {
+                indent(depth + 1);
+                std::cout << "STRING: \"" << arg.text << "\"\n";
+            }
+        }
+        break;
+    }
     }
 }
 

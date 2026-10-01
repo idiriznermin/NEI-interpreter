@@ -35,6 +35,8 @@ public:
     std::unique_ptr<StmtNode> parse_if_statement();
     std::unique_ptr<StmtNode> parse_while_statement();
     std::vector<std::unique_ptr<StmtNode>> parse_program();
+    PrintArg parse_print_arg();
+    std::unique_ptr<StmtNode> parse_print_statement();
 
 private:
     std::vector<Token> tokens;
@@ -67,4 +69,5 @@ private:
         }
         return advance();
     }
+
 };

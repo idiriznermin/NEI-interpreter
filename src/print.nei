@@ -1,0 +1,12 @@
+var int: a := 5, b := 5, i := 0
+var arr<int, 3>: v := {4, 5, 6}
+
+print(a, "is equal to", b)
+print("sum:", a + b, "product:", a * b)
+print("commas, inside, strings")
+print()
+while (i < 3)
+    print("v[", i, "] =", v[i])
+    i := i + 1
+endwhile
+exit

@@ -11,6 +11,7 @@ public:
     {
 
         READ,
+        PRINT,
         VAR,
         CONST,
         ARR,
@@ -30,6 +31,7 @@ public:
         LITERAL_INTEGER,
         LITERAL_CHAR,
         LITERAL_BOOL,
+        LITERAL_STRING,
 
         ASSIGN, // :=
         OP_COMPARE,

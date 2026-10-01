@@ -33,12 +33,19 @@ enum class StmtType {
     ASSIGN,
     IF,
     WHILE,
+    PRINT
 };
 
 struct AssignTarget
 {
     std::string name;
     std::unique_ptr<ExprNode> index; /// if nullptr -> plain variable
+};
+
+struct PrintArg
+{
+    std::string text;
+    std::unique_ptr<ExprNode> expr;
 };
 
 struct StmtNode
@@ -73,4 +80,8 @@ struct StmtNode
     /// type = WHILE
     std::unique_ptr<ExprNode> while_cond;
     std::vector<std::unique_ptr<StmtNode>> while_body;
+
+
+    /// type = PRINT
+    std::vector<PrintArg> print_args;
 };
