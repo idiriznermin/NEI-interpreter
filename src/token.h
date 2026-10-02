@@ -55,13 +55,14 @@ public:
         ERROR
     };
 
-    enum class Operator
+     enum class Operator
     {
         EQUALS,
         LESS,
         GREATER,
         LESS_EQUAL,
         GREATER_EQUAL,
+        NOT_EQUALS,
 
         ADD,
         SUB,
@@ -88,7 +89,8 @@ public:
         std::string,
         int,
         char,
-        bool
+        bool,
+        Operator
     > value;
 
     int line, col;
@@ -98,8 +100,10 @@ public:
     Token(Type type, int value, int line, int col);
     Token(Type type, char value, int line, int col);
     Token(Type type, bool value, int line, int col);
+    Token(Type type, Operator value, int line, int col);
 
     void print() const;
 
 };
 
+const char* op_to_string(Token::Operator op);

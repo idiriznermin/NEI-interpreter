@@ -1,5 +1,7 @@
 #pragma once
 
+#include "token.h"
+
 #include<memory>
 #include<string>
 #include<vector>
@@ -20,10 +22,10 @@ struct ExprNode
     std::string var_name;
     std::string arr_name;
     std::unique_ptr<ExprNode> arr_index;
-    std::string op;
+    Token::Operator op;
     std::unique_ptr<ExprNode> left;
     std::unique_ptr<ExprNode> right;
-    std::string unary_op;
+    Token::Operator unary_op;
     std::unique_ptr<ExprNode> unary_child;
 };
 

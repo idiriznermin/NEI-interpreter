@@ -40,10 +40,10 @@ void print_expr(const ExprNode *node, int depth = 0)
         print_expr(node->arr_index.get(), depth + 2);
         return; // index already printed; skip the generic child calls below
     case ExprType::BINARY:
-        std::cout << "OPERATOR: " << node->op << '\n';
+        std::cout << "OPERATOR: " << op_to_string(node->op) << '\n';
         break;
     case ExprType::UNARY:
-        std::cout << "UNARY OPERATOR: " << node->unary_op << '\n';
+        std::cout << "UNARY OPERATOR: " <<op_to_string(node->unary_op) << '\n';
         break;
     case ExprType::READ:
         std::cout << "READ()\n";

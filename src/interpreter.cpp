@@ -3,7 +3,7 @@
 #include "ast.h"
 #include "parser.h"
 #include "environment.h"
-
+#include "token.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -32,17 +32,22 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
     if (node->type == ExprType::UNARY)
     {
         int child = evaluate(node->unary_child.get(), env);
-        if (node->unary_op == "-")
-            return (-child);
-        if (node->unary_op == "!")
-            return (!(child));
-        if (node->unary_op == "~")
-            return (~child);
-        std::cout << "Error: unknown unary operation - " << node->unary_op << std::endl;
+        switch (node->unary_op)
+        {
+        case Token::Operator::SUB:
+            return -child;
+        case Token::Operator::LOGICAL_NOT:
+            return !child;
+        case Token::Operator::BITWISE_NOT:
+            return ~child;
+        default:
+            std::cout << "Error: unknown unary operator " << op_to_string(node->unary_op) << std::endl;
+            exit(1);
+        }
         exit(1);
     }
 
-     if (node->type == ExprType::READ)
+    if (node->type == ExprType::READ)
     {
         int value;
         if (!(std::cin >> value))
@@ -53,65 +58,65 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
         return value;
     }
 
-    int left_child = evaluate(node->left.get(), env);
-    int right_child = evaluate(node->right.get(), env);
+    int l = evaluate(node->left.get(), env);
+    int r = evaluate(node->right.get(), env);
 
-    if (node->op == "+")
-        return left_child + right_child;
-    if (node->op == "-")
-        return left_child - right_child;
-    if (node->op == "*")
-        return left_child * right_child;
-
-    if (node->op == "/")
+    switch (node->op)
     {
-        if (right_child == 0)
+    case Token::Operator::ADD:
+        return l + r;
+    case Token::Operator::SUB:
+        return l - r;
+    case Token::Operator::MUL:
+        return l * r;
+    case Token::Operator::DIV:
+        if (r == 0)
         {
-            std::cout << "Error: dividing by zero (" << left_child << " / " << right_child << ")" << std::endl;
+            std::cout << "Error: dividing by zero (" << l << " / " << r << ")" << std::endl;
             exit(1);
         }
-        return left_child / right_child;
-    }
-    if (node->op == "%")
-    {
-        if (right_child == 0)
+        return l / r;
+    case Token::Operator::MOD:
+        if (r == 0)
         {
-            std::cout << "Error: modulo by zero (" << left_child << " / " << right_child << ")" << std::endl;
+            std::cout << "Error: modulo by zero (" << l << " % " << r << ")" << std::endl;
             exit(1);
         }
-        return left_child % right_child;
+        return l % r;
+
+    case Token::Operator::BITWISE_AND:
+        return l & r;
+    case Token::Operator::BITWISE_OR:
+        return l | r;
+    case Token::Operator::BITWISE_XOR:
+        return l ^ r;
+    case Token::Operator::BITWISE_LEFT_SHIFT:
+        return l << r;
+    case Token::Operator::BITWISE_RIGHT_SHIFT:
+        return l >> r;
+
+    case Token::Operator::EQUALS:
+        return l == r;
+    case Token::Operator::NOT_EQUALS:
+        return l != r;
+    case Token::Operator::LESS:
+        return l < r;
+    case Token::Operator::GREATER:
+        return l > r;
+    case Token::Operator::LESS_EQUAL:
+        return l <= r;
+    case Token::Operator::GREATER_EQUAL:
+        return l >= r;
+
+    case Token::Operator::LOGICAL_AND:
+        return l && r;
+    case Token::Operator::LOGICAL_OR:
+        return l || r;
+
+    default:
+        std::cout << "Error: unknown binary operator " << op_to_string(node->op) << std::endl;
+        exit(1);
     }
-
-    if (node->op == "&")
-        return (left_child & right_child);
-    if (node->op == "|")
-        return (left_child | right_child);
-    if (node->op == "^")
-        return (left_child ^ right_child);
-    if (node->op == "<<")
-        return (left_child << right_child);
-    if (node->op == ">>")
-        return (left_child >> right_child);
-
-    if (node->op == "=")
-        return (left_child == right_child) ? 1 : 0;
-    if (node->op == "!=")
-        return (left_child != right_child) ? 1 : 0;
-    if (node->op == "<")
-        return (left_child < right_child) ? 1 : 0;
-    if (node->op == ">")
-        return (left_child > right_child) ? 1 : 0;
-    if (node->op == "<=")
-        return (left_child <= right_child) ? 1 : 0;
-    if (node->op == ">=")
-        return (left_child >= right_child) ? 1 : 0;
-
-    if (node->op == "&&")
-        return ((left_child) && (right_child));
-    if (node->op == "||")
-        return ((left_child) || (right_child));
-
-    std::cout << "Error: unknown binary operation - " << node->op << std::endl;
     exit(1);
 }
 
@@ -227,25 +232,27 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
         return;
     }
 
-    if (node -> type == StmtType::PRINT)
+    if (node->type == StmtType::PRINT)
     {
         std::vector<std::string> pieces;
-        for (const auto &arg: node->print_args)
+        for (const auto &arg : node->print_args)
         {
             if (arg.expr)
                 pieces.push_back(std::to_string(evaluate(arg.expr.get(), env)));
-            else pieces.push_back(arg.text);
+            else
+                pieces.push_back(arg.text);
         }
 
-        for (int i = 0; i < (int)pieces.size(); ++ i)
+        for (int i = 0; i < (int)pieces.size(); ++i)
         {
-            if(i)std::cout << " ";
+            if (i)
+                std::cout << " ";
             std::cout << pieces[i];
         }
         std::cout << '\n';
         return;
     }
-    
+
     std::cout << "Error: encountered an unknown statement type during execution" << std::endl;
     exit(1);
 }

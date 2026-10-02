@@ -161,8 +161,7 @@ std::unique_ptr<StmtNode> Parser::parse_array_declaration(int &arr_const)
 
     expect(Token::Type::ARR, "Error: expected arr token");
     Token curr_token = peek();
-
-    if(curr_token.type == Token::Type::OP_COMPARE && std::get<std::string>(curr_token.value) == "<")advance();
+    if(curr_token.type == Token::Type::OP_COMPARE && std::get<Token::Operator>(curr_token.value) == Token::Operator::LESS)advance();
     else
     {
         std::cout << "Error: expected '<' token" << std::endl;
@@ -189,7 +188,7 @@ std::unique_ptr<StmtNode> Parser::parse_array_declaration(int &arr_const)
     int sz = std::get<int>(token_size.value);
 
     curr_token = peek();
-    if(curr_token.type == Token::Type::OP_COMPARE && std::get<std::string>(curr_token.value) == ">")advance();
+    if(curr_token.type == Token::Type::OP_COMPARE && std::get<Token::Operator>(curr_token.value) == Token::Operator::GREATER)advance();
     else
     {
         std::cout << "Error: expected '>' token" << std::endl;
@@ -212,7 +211,7 @@ std::unique_ptr<StmtNode> Parser::parse_array_declaration(int &arr_const)
 
             for (int i = 0; i < sz; ++ i)
             {
-                curr_init.push_back(std::move(parse_expression()));
+                curr_init.push_back(std::move(parse_value()));
                 if(i < sz-1)expect(Token::Type::COMMA, "Error: expected ',' token");
             }
             expect(Token::Type::RIGHT_CURLY_BRACKET, "Error: expected '}' token");

@@ -13,7 +13,7 @@ public:
     Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), pos(0)
     {
     }
-    bool check_bitwise(const std::string &op);
+    bool check_bitwise(Token::Operator op);
     std::unique_ptr<ExprNode> parse_expression();
     std::unique_ptr<ExprNode> parse_bit_or();
     std::unique_ptr<ExprNode> parse_bit_xor();
@@ -44,7 +44,7 @@ private:
 
     Token &peek()
     {
-        if (pos >= tokens.size())
+        if (pos >= (int)tokens.size())
             return tokens.back();
         return tokens[pos];
     }

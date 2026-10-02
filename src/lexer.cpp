@@ -67,6 +67,19 @@ std::map<std::string, Token::Type> keywords = {
     {"\n", Token::Type::EOLINE},
     {"exit", Token::Type::EOFILE}};
 
+std::map<std::string, Token::Operator> operators = {
+    {"=", Token::Operator::EQUALS},   {"!=", Token::Operator::NOT_EQUALS},
+    {"<", Token::Operator::LESS},     {">", Token::Operator::GREATER},
+    {"<=", Token::Operator::LESS_EQUAL}, {">=", Token::Operator::GREATER_EQUAL},
+    {"+", Token::Operator::ADD},      {"-", Token::Operator::SUB},
+    {"*", Token::Operator::MUL},      {"/", Token::Operator::DIV},
+    {"%", Token::Operator::MOD},
+    {"&", Token::Operator::BITWISE_AND}, {"|", Token::Operator::BITWISE_OR},
+    {"^", Token::Operator::BITWISE_XOR}, {"~", Token::Operator::BITWISE_NOT},
+    {"<<", Token::Operator::BITWISE_LEFT_SHIFT}, {">>", Token::Operator::BITWISE_RIGHT_SHIFT},
+    {"!", Token::Operator::LOGICAL_NOT},
+    {"&&", Token::Operator::LOGICAL_AND}, {"||", Token::Operator::LOGICAL_OR}
+};
 /// 0 - empty space
 /// 1 - starts a word
 /// 2 - starts an integer
@@ -193,7 +206,10 @@ std::vector<Token> Lexer::tokenize(const std::string &source)
                 last_newline = ptr;
             }
         }
-        tokens.push_back(Token(keywords[best_match], best_match, cnt_newlines, pos - last_newline));
+        if (operators.count(best_match))
+                tokens.push_back(Token(keywords[best_match], operators[best_match], cnt_newlines, pos - last_newline));
+        else
+            tokens.push_back(Token(keywords[best_match], best_match, cnt_newlines, pos - last_newline));
         pos = best_matchpoint + 1;
     }
     return tokens;

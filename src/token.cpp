@@ -24,6 +24,38 @@ Token::Token(Token::Type type, bool value, int line, int col):
     type(type), value(value), line(line), col(col)
 {}
 
+Token::Token(Type type, Operator value, int line, int col)
+    : type(type), value(value), line(line), col(col)
+{}
+
+const char* op_to_string(Token::Operator op)
+{
+    switch (op)
+    {
+    case Token::Operator::EQUALS:              return "=";
+    case Token::Operator::NOT_EQUALS:          return "!=";
+    case Token::Operator::LESS:                return "<";
+    case Token::Operator::GREATER:             return ">";
+    case Token::Operator::LESS_EQUAL:          return "<=";
+    case Token::Operator::GREATER_EQUAL:       return ">=";
+    case Token::Operator::ADD:                 return "+";
+    case Token::Operator::SUB:                 return "-";
+    case Token::Operator::MUL:                 return "*";
+    case Token::Operator::DIV:                 return "/";
+    case Token::Operator::MOD:                 return "%";
+    case Token::Operator::BITWISE_AND:         return "&";
+    case Token::Operator::BITWISE_OR:          return "|";
+    case Token::Operator::BITWISE_XOR:         return "^";
+    case Token::Operator::BITWISE_NOT:         return "~";
+    case Token::Operator::BITWISE_LEFT_SHIFT:  return "<<";
+    case Token::Operator::BITWISE_RIGHT_SHIFT: return ">>";
+    case Token::Operator::LOGICAL_NOT:         return "!";
+    case Token::Operator::LOGICAL_AND:         return "&&";
+    case Token::Operator::LOGICAL_OR:          return "||";
+    }
+    return "?";
+}
+
 std::map<Token::Type, std::string> tokenStrings = {
     {Token::Type::READ, "read"},
     {Token::Type::PRINT, "print"},
@@ -90,7 +122,8 @@ void Token::print() const
             std::cout << (value ? "true" : "false");
         else if constexpr (std::is_same_v<T, char>)
             std::cout << "'" << value << "'";
-        else std::cout << value;
+        else if constexpr(std::is_same_v<T, Token::Operator>)
+            std::cout << op_to_string(value);
     }, value);
 
     std::cout << "\n";
