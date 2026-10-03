@@ -96,7 +96,7 @@ void Token::print() const
         else if constexpr (std::is_same_v<T, char>)
             std::cout << "'" << value << "'";
         else if constexpr(std::is_same_v<T, Operator>)
-            std::cout << op_to_string(value);
+            std::cout << operator_to_string(value);
     }, value);
 
     std::cout << "\n";

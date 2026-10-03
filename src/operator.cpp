@@ -1,10 +1,8 @@
 #include "operator.h"
 
-#include <string>
-#include <map>
+#include <cassert>
 
-
-std::map<Operator, std::string> operator_names = {
+const std::map<Operator, std::string> OPERATOR_TO_STRING = {
     {Operator::CMP_EQ, "="},
     {Operator::CMP_LT, "<"},
     {Operator::CMP_GT, ">"},
@@ -27,10 +25,9 @@ std::map<Operator, std::string> operator_names = {
     {Operator::LOG_OR, "||"}
 };
 
-std::string op_to_string(Operator op)
+std::string operator_to_string(Operator op)
 {
-    auto it = operator_names.find(op);
-    if (it == operator_names.end())
-        return "?";
-    else return operator_names[op];
+    auto it = OPERATOR_TO_STRING.find(op);
+    assert(it != OPERATOR_TO_STRING.end());
+    return it->second;
 }

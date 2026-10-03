@@ -41,7 +41,7 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
         case Operator::BIT_NOT:
             return ~child;
         default:
-            std::cout << "Error: unknown unary operator " << op_to_string(node->unary_op) << std::endl;
+            std::cout << "Error: unknown unary operator " << operator_to_string(node->unary_op) << std::endl;
             exit(1);
         }
         exit(1);
@@ -114,7 +114,7 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
         return l || r;
 
     default:
-        std::cout << "Error: unknown binary operator " << op_to_string(node->op) << std::endl;
+        std::cout << "Error: unknown binary operator " << operator_to_string(node->op) << std::endl;
         exit(1);
     }
     exit(1);

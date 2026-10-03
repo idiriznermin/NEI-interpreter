@@ -1,6 +1,7 @@
 #include "token.h"
 #include "lexer.h"
 #include "operator.h"
+#include "util.h"
 
 #include <iostream>
 #include <algorithm>
@@ -10,7 +11,7 @@
 
 Lexer::Lexer() = default;
 
-std::map<std::string, Token::Type> keywords = {
+const std::map<std::string, Token::Type> KEYWORDS = {
     {"read", Token::Type::READ},
     {"print", Token::Type::PRINT},
     {"var", Token::Type::VAR},
@@ -68,28 +69,9 @@ std::map<std::string, Token::Type> keywords = {
     {"\n", Token::Type::EOLINE},
     {"exit", Token::Type::EOFILE}};
 
-std::map<std::string, Operator> operators = {
-    {"=", Operator::CMP_EQ},
-    {"<", Operator::CMP_LT},
-    {">", Operator::CMP_GT},
-    {"<=", Operator::CMP_LEQ},
-    {">=", Operator::CMP_GEQ},
-    {"!=", Operator::CMP_NEQ},
-    {"+", Operator::ARITH_ADD},
-    {"-", Operator::ARITH_SUB},
-    {"*", Operator::ARITH_MUL},
-    {"/", Operator::ARITH_DIV},
-    {"%", Operator::ARITH_MOD},
-    {"&", Operator::BIT_AND},
-    {"|", Operator::BIT_OR},
-    {"^", Operator::BIT_XOR},
-    {"~", Operator::BIT_NOT},
-    {"<<", Operator::BIT_LSHIFT},
-    {">>", Operator::BIT_RSHIFT},
-    {"!", Operator::LOG_NOT},
-    {"&&", Operator::LOG_AND},
-    {"||", Operator::LOG_OR}
-};
+
+const std::map<std::string, Operator> OP_KEYWORDS = make_inverse_map(OPERATOR_TO_STRING);
+
 /// 0 - empty space
 /// 1 - starts a word
 /// 2 - starts an integer
@@ -172,10 +154,10 @@ std::vector<Token> Lexer::tokenize(const std::string &source)
                 curr_value += source[pos];
                 pos++;
             }
-            if (keywords.find(curr_value) == keywords.end())
+            if (KEYWORDS.find(curr_value) == KEYWORDS.end())
                 tokens.push_back(Token(Token::Type::IDENTIFIER, curr_value, cnt_newlines, pos - last_newline));
             else
-                tokens.push_back(Token(keywords[curr_value], curr_value, cnt_newlines, pos - last_newline));
+                tokens.push_back(Token(KEYWORDS.at(curr_value), curr_value, cnt_newlines, pos - last_newline));
             continue;
         }
         if (current_type == 2)
@@ -198,7 +180,7 @@ std::vector<Token> Lexer::tokenize(const std::string &source)
         for (int matchpoint = pos; matchpoint < std::min(sz, pos + 5); ++matchpoint)
         {
             curr_value += source[matchpoint];
-            if (keywords.find(curr_value) == keywords.end())
+            if (KEYWORDS.find(curr_value) == KEYWORDS.end())
                 continue;
             best_matchpoint = matchpoint;
             best_match = curr_value;
@@ -216,10 +198,12 @@ std::vector<Token> Lexer::tokenize(const std::string &source)
                 last_newline = ptr;
             }
         }
-        if (operators.count(best_match))
-                tokens.push_back(Token(keywords[best_match], operators[best_match], cnt_newlines, pos - last_newline));
+
+        if (OP_KEYWORDS.count(best_match))
+            tokens.push_back(Token(KEYWORDS.at(best_match), OP_KEYWORDS.at(best_match), cnt_newlines, pos - last_newline));
         else
-            tokens.push_back(Token(keywords[best_match], best_match, cnt_newlines, pos - last_newline));
+            tokens.push_back(Token(KEYWORDS.at(best_match), best_match, cnt_newlines, pos - last_newline));
+
         pos = best_matchpoint + 1;
     }
     return tokens;

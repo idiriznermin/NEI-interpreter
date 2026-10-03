@@ -1,6 +1,7 @@
 #pragma once
 
-#include<string>
+#include <string>
+#include <map>
 
 enum class Operator
 {
@@ -29,4 +30,5 @@ enum class Operator
     LOG_OR
 };
 
-std::string op_to_string(Operator op);
+extern const std::map<Operator, std::string> OPERATOR_TO_STRING;
+std::string operator_to_string(Operator op);
