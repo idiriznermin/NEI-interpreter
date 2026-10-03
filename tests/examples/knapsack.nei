@@ -1,6 +1,6 @@
 var int: n := read(), cap := read(), i := 0, w := 0
-var arr<int, 4>: weight, value
-var arr<int, 8>: dp
+var arr<int, 100>: weight, value
+var arr<int, 10001>: dp
 
 while (i < n)
     weight[i] := read()
@@ -19,4 +19,6 @@ while(i < n)
     endwhile
     i := i + 1
 endwhile
+
+print("best =", dp[cap])
 exit

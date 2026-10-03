@@ -1,6 +1,6 @@
 const int: inf := 1000000
 var int: n := read(), m := read(), i := 0, j := 0, k := 0, u := 0, v := 0, w := 0
-var arr<int, 16>: d
+var arr<int, 10000>: d
 
 while (i < n * n)
     d[i] := inf
@@ -34,5 +34,19 @@ while (k < n)
         i := i + 1
     endwhile
     k := k + 1
+endwhile
+
+i := 0
+while (i < n)
+    j := 0
+    while (j < n)
+        if (d[i * n + j] = inf)
+            print(i, j, "INF")
+        else
+            print(i, j, d[i * n + j])
+        endif
+        j := j + 1
+    endwhile
+    i := i + 1
 endwhile
 exit

@@ -1,5 +1,5 @@
 var int: n := read(), i := 0, j := 0, swaps := 0
-var arr<int, 8>: a
+var arr<int, 1000>: a
 
 while (i < n)
     a[i] := read()
@@ -16,6 +16,13 @@ while (i < n - 1)
         endif
         j := j + 1
     endwhile
+    i := i + 1
+endwhile
+
+print("swaps =", swaps)
+i := 0
+while (i < n)
+    print(a[i])
     i := i + 1
 endwhile
 exit

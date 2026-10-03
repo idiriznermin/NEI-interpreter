@@ -9,4 +9,6 @@ while (e > 0)
     pow := (pow * pow) % mod
     e := e / 2
 endwhile
+
+print("result =", result)
 exit

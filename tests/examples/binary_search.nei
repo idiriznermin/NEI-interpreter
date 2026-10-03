@@ -1,5 +1,5 @@
 var int: n := read(), i := 0
-var arr<int, 20>: a
+var arr<int, 1000>: a
 
 while (i < n)
     a[i] := read()
@@ -20,4 +20,10 @@ while (left <= right && found = 0)
     right := mid - 1
     endif
 endwhile
+
+if (found = 1)
+    print("found", x, "at", pos)
+else
+    print(x, "not found")
+endif
 exit

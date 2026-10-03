@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
     Interpreter inter;
     inter.run(program, env);
 
-    for (const auto &[name, info] : env.get_variables())
+    /*for (const auto &[name, info] : env.get_variables())
         std::cout << name << " = " << info.value << (info.is_const ? " (const)" : "") << '\n';
 
     for (const auto &[name, info] : env.get_arrays())
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
         for (size_t i = 0; i < info.values.size(); ++i)
             std::cout << (i ? ", " : "") << info.values[i];
         std::cout << "}" << (info.is_const ? " (const)" : "") << '\n';
-    }
+    }*/
 
     return 0;
 }
