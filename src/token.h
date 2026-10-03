@@ -53,8 +53,7 @@ public:
         RIGHT_CURLY_BRACKET,
 
         EOLINE, // \n
-        EOFILE,
-        ERROR
+        EOFILE
     };
 
 

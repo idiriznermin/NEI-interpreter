@@ -72,7 +72,6 @@ std::map<Token::Type, std::string> tokenStrings = {
 
     {Token::Type::EOLINE, "eoline"},
     {Token::Type::EOFILE, "eofile"},
-    {Token::Type::ERROR, "error"}
 };
 
 void Token::print() const
