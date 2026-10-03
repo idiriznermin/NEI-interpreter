@@ -6,7 +6,7 @@
 #include "ast.h"
 #include "environment.h"
 #include "interpreter.h"
-
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -196,7 +196,7 @@ void print_body(const std::vector<std::unique_ptr<StmtNode>> &body, int depth)
         print_stmt(stmt.get(), depth);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     if (argc < 2)
     {
@@ -210,14 +210,20 @@ int main(int argc, char *argv[])
         std::cout << "Error: could not open file '" << argv[1] << "'" << std::endl;
         return 1;
     }
-
-    bool debug = (argc >= 3 && std::string(argv[2]) == "--debug");
+    bool debug = false, time = false;
+    for (int i = 2; i < argc; ++ i)
+    {
+        if (std::string(argv[i]) == "--debug")
+            debug = true;
+        if (std::string(argv[i]) == "--time")
+            time = true;
+    }
 
     std::stringstream buffer;
     buffer << file.rdbuf();
     std::string source = buffer.str();
     source.erase(std::remove(source.begin(), source.end(), '\r'), source.end());
-
+    
     Lexer lexer;
     std::vector<Token> tokens = lexer.tokenize(source);
 
@@ -232,9 +238,17 @@ int main(int argc, char *argv[])
         for (const auto &stmt : program)
             print_stmt(stmt.get());
 
+    auto start_running = std::chrono::steady_clock::now();
     Environment env;
     Interpreter inter;
     inter.run(program, env);
+    auto end_running = std::chrono::steady_clock::now();
+
+    auto ms_running = std::chrono::duration_cast<std::chrono::milliseconds>(end_running - start_running);
+    if (time)
+    {
+        std::cout << "Runtime: " << ms_running.count() << " ms\n";
+    }
 
     /*for (const auto &[name, info] : env.get_variables())
         std::cout << name << " = " << info.value << (info.is_const ? " (const)" : "") << '\n';

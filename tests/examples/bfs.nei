@@ -1,7 +1,7 @@
 var int: n := read(), m := read(), start
 var int: i := 0, u := 0, v := 0, cur := 0, head := 0, tail := 0
-var arr<int, 10000>: g
-var arr<int, 100>: dist, queue
+var arr<int, 1000000>: g
+var arr<int, 1000>: dist, queue
 
 while (i < m)
     u := read()

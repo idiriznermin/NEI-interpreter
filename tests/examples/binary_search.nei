@@ -6,24 +6,29 @@ while (i < n)
     i := i + 1
 endwhile
 
-var int: x := read()
-var int: left := 0, right := n - 1, mid := 0, found := 0, pos := -1
+var int: q := read(), x := 0
+var int: left := 0, right := 0, mid := 0, found := 0, pos := 0
 
-while (left <= right && found = 0)
-    mid := (left + right)/2
-    if (a[mid] = x)
-    found := 1
-    pos := mid
-    elseif (a[mid] < x)
-    left := mid + 1
+while (q > 0)
+    x := read()
+    left, right, found, pos := 0, n - 1, 0, -1
+    while (left <= right && found = 0)
+        mid := (left + right)/2
+        if (a[mid] = x)
+            found := 1
+            pos := mid
+        elseif (a[mid] < x)
+            left := mid + 1
+        else
+            right := mid - 1
+        endif
+    endwhile
+
+    if (found = 1)
+        print("found", x, "at", pos)
     else
-    right := mid - 1
+        print(x, "not found")
     endif
+    q := q - 1
 endwhile
-
-if (found = 1)
-    print("found", x, "at", pos)
-else
-    print(x, "not found")
-endif
 exit

@@ -1,13 +1,18 @@
-var int: a := read(), b := read()
-var int: x := a, y := b, gcd := 0, lcm := 0
+var int: q := read(), a := 0, b := 0
+var int: x := 0, y := 0, gcd := 0, lcm := 0
 
-while (y > 0)
-    x, y := y, x % y
+while (q > 0)
+    a, b := read(), read()
+    x, y := a, b
+    while (y > 0)
+        x, y := y, x % y
+    endwhile
+
+    gcd := x
+    lcm := a / gcd * b
+
+    print("gcd =", gcd)
+    print("lcm =", lcm)
+    q := q - 1
 endwhile
-
-gcd := x
-lcm := a / gcd * b
-
-print("gcd =", gcd)
-print("lcm =", lcm)
 exit

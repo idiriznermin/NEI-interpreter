@@ -1,14 +1,18 @@
-var int: base := read(), e := read(), mod := read()
-var int: result := 1, pow := 0
+var int: q := read(), base := 0, e := 0, mod := 0
+var int: result := 0, pow := 0
 
-pow := base % mod
-while (e > 0)
-    if (e % 2 = 1)
-        result := (result * pow)  % mod
-    endif
-    pow := (pow * pow) % mod
-    e := e / 2
+while (q > 0)
+    base, e, mod := read(), read(), read()
+    result := 1
+    pow := base % mod
+    while (e > 0)
+        if (e % 2 = 1)
+            result := (result * pow)  % mod
+        endif
+        pow := (pow * pow) % mod
+        e := e / 2
+    endwhile
+    print("result =", result)
+    q := q - 1
 endwhile
-
-print("result =", result)
 exit
