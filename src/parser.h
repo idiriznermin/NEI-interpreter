@@ -5,32 +5,28 @@
 
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 class Parser
 {
 
 public:
-    Parser(std::vector<Token> tokens) : tokens(std::move(tokens)), pos(0)
-    {
-    }
-    std::vector<std::unique_ptr<StmtNode>> parse_program();
-
-    PrintArg parse_print_arg();
-    std::unique_ptr<StmtNode> parse_print_statement();
+    Parser() = default;
+    std::vector<std::unique_ptr<StmtNode>> parse(std::vector<Token>);
 
 private:
     std::vector<Token> tokens;
     int pos;
 
-    Token &peek()
+    Token peek()
     {
-        if (pos >= (int)tokens.size())
-            return tokens.back();
+        assert(pos < (int)tokens.size());
         return tokens[pos];
     }
 
-    Token &advance()
+    Token advance()
     {
+        assert(pos < (int)tokens.size());
         return tokens[pos++];
     }
 
@@ -69,6 +65,8 @@ private:
     std::vector<std::unique_ptr<StmtNode>> parse_statement_list();
     std::unique_ptr<StmtNode> parse_if_statement();
     std::unique_ptr<StmtNode> parse_while_statement();
+    PrintArg parse_print_arg();
+    std::unique_ptr<StmtNode> parse_print_statement();
 
     bool check_bitwise(Operator op);
 };

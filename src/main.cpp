@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
     buffer << file.rdbuf();
     std::string source = buffer.str();
     source.erase(std::remove(source.begin(), source.end(), '\r'), source.end());
-    
+
     Lexer lexer;
     std::vector<Token> tokens = lexer.tokenize(source);
 
@@ -231,17 +231,17 @@ int main(int argc, char* argv[])
         for (const Token &t : tokens)
             t.print();
 
-    Parser parser(tokens);
-    auto program = parser.parse_program();
+    Parser parser;
+    auto ast = parser.parse(tokens);
 
     if (debug)
-        for (const auto &stmt : program)
+        for (const auto &stmt : ast)
             print_stmt(stmt.get());
 
     auto start_running = std::chrono::steady_clock::now();
     Environment env;
     Interpreter inter;
-    inter.run(program, env);
+    inter.run(ast, env);
     auto end_running = std::chrono::steady_clock::now();
 
     auto ms_running = std::chrono::duration_cast<std::chrono::milliseconds>(end_running - start_running);

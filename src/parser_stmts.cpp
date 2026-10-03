@@ -4,8 +4,10 @@
 #include "operator.h"
 #include <vector>
 
-std::vector<std::unique_ptr<StmtNode>> Parser::parse_program()
+std::vector<std::unique_ptr<StmtNode>> Parser::parse(std::vector<Token> tokens)
 {
+    pos = 0;
+    this->tokens = tokens;
     std::vector<std::unique_ptr<StmtNode>> node;
     node = parse_statement_list();
     expect(Token::Type::EOFILE, "Error: expected eofile token");

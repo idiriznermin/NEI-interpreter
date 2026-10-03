@@ -5,6 +5,14 @@ set DIR=tests\examples
 set OUT=%TEMP%\nei_tests
 set /a pass=0, fail=0, total_ms=0
 
+echo === Building ===
+call build.bat
+if errorlevel 1 (
+    echo Build failed, not running tests.
+    exit /b 1
+)
+echo.
+
 if exist "%OUT%" rmdir /s /q "%OUT%"
 mkdir "%OUT%"
 

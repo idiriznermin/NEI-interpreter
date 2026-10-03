@@ -9,8 +9,6 @@
 #include <vector>
 #include <map>
 
-Lexer::Lexer() = default;
-
 const std::map<std::string, Token::Type> KEYWORDS = {
     {"read", Token::Type::READ},
     {"print", Token::Type::PRINT},

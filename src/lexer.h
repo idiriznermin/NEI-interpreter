@@ -9,7 +9,7 @@ class Lexer
 {
 
 public:
-    Lexer();
+    Lexer() = default;
     std::vector<Token> tokenize(const std::string& source);
 
 };
