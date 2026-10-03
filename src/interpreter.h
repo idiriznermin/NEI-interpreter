@@ -11,6 +11,6 @@ public:
     void run(const std::vector<std::unique_ptr<StmtNode>> &program, Environment &env);
 
 private:
-    int evaluate(const ExprNode* node, Environment &env); /// walks the expr tree
+    int evaluate(const ExprNode* node, Environment &env);
     void execute(const StmtNode* node, Environment &env);
 };

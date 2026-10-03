@@ -1,7 +1,7 @@
 #include "token.h"
 #include "parser.h"
 #include "ast.h"
-
+#include "operator.h"
 #include <vector>
 
 std::vector<std::unique_ptr<StmtNode>> Parser::parse_program()
@@ -161,7 +161,7 @@ std::unique_ptr<StmtNode> Parser::parse_array_declaration(int &arr_const)
 
     expect(Token::Type::ARR, "Error: expected arr token");
     Token curr_token = peek();
-    if(curr_token.type == Token::Type::OP_COMPARE && std::get<Token::Operator>(curr_token.value) == Token::Operator::LESS)advance();
+    if(curr_token.type == Token::Type::OP_COMPARE && std::get<Operator>(curr_token.value) == Operator::CMP_LT)advance();
     else
     {
         std::cout << "Error: expected '<' token" << std::endl;
@@ -188,7 +188,7 @@ std::unique_ptr<StmtNode> Parser::parse_array_declaration(int &arr_const)
     int sz = std::get<int>(token_size.value);
 
     curr_token = peek();
-    if(curr_token.type == Token::Type::OP_COMPARE && std::get<Token::Operator>(curr_token.value) == Token::Operator::GREATER)advance();
+    if(curr_token.type == Token::Type::OP_COMPARE && std::get<Operator>(curr_token.value) == Operator::CMP_GT)advance();
     else
     {
         std::cout << "Error: expected '>' token" << std::endl;

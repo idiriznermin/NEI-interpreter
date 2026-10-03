@@ -1,4 +1,5 @@
 #include "message.h"
+#include "operator.h"
 #include "token.h"
 #include "lexer.h"
 #include "parser.h"

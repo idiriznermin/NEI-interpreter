@@ -1,6 +1,7 @@
 #include "token.h"
 #include "parser.h"
 #include "ast.h"
+#include "operator.h"
 
 #include <vector>
 
@@ -45,7 +46,7 @@ std::unique_ptr<ExprNode> Parser::parse_logical()
         node->type = ExprType::BINARY;
         node->left = std::move(left);
         node->right = std::move(right);
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         left = std::move(node);
     }
     return left;
@@ -78,14 +79,14 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
     std::unique_ptr<ExprNode> first = Parser::parse_bit_or();
 
     std::vector<std::unique_ptr<ExprNode>> operands;
-    std::vector<Token::Operator> operations;
+    std::vector<Operator> operations;
 
     operands.push_back(std::move(first));
 
     while (Parser::peek().type == Token::Type::OP_COMPARE)
     {
         Token curr_op = Parser::advance();
-        operations.push_back(std::get<Token::Operator>(curr_op.value));
+        operations.push_back(std::get<Operator>(curr_op.value));
         operands.push_back(Parser::parse_bit_or());
     }
 
@@ -119,7 +120,7 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
         {
             auto and_node = std::make_unique<ExprNode>();
             and_node->type = ExprType::BINARY;
-            and_node->op = Token::Operator::LOGICAL_AND;
+            and_node->op = Operator::LOG_AND;
             and_node->left = std::move(result);
             and_node->right = std::move(cmp);
             result = std::move(and_node);
@@ -129,23 +130,23 @@ std::unique_ptr<ExprNode> Parser::parse_comparison()
     return result;
 }
 
-bool Parser::check_bitwise(Token::Operator op)
+bool Parser::check_bitwise(Operator op)
 {
     return (peek().type == Token::Type::OP_BITWISE &&
-            std::get<Token::Operator>(peek().value) == op);
+            std::get<Operator>(peek().value) == op);
 }
 
 std::unique_ptr<ExprNode> Parser::parse_bit_or()
 {
     std::unique_ptr<ExprNode> left = parse_bit_xor();
-    while (check_bitwise(Token::Operator::BITWISE_OR))
+    while (check_bitwise(Operator::BIT_OR))
     {
         Token curr_op = advance();
         std::unique_ptr<ExprNode> right = parse_bit_xor();
 
         auto node = std::make_unique<ExprNode>();
         node->type = ExprType::BINARY;
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         node->left = std::move(left);
         node->right = std::move(right);
         left = std::move(node);
@@ -156,14 +157,14 @@ std::unique_ptr<ExprNode> Parser::parse_bit_or()
 std::unique_ptr<ExprNode> Parser::parse_bit_xor()
 {
     std::unique_ptr<ExprNode> left = parse_bit_and();
-    while (check_bitwise(Token::Operator::BITWISE_XOR))
+    while (check_bitwise(Operator::BIT_XOR))
     {
         Token curr_op = advance();
         std::unique_ptr<ExprNode> right = parse_bit_and();
 
         auto node = std::make_unique<ExprNode>();
         node->type = ExprType::BINARY;
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         node->left = std::move(left);
         node->right = std::move(right);
         left = std::move(node);
@@ -174,14 +175,14 @@ std::unique_ptr<ExprNode> Parser::parse_bit_xor()
 std::unique_ptr<ExprNode> Parser::parse_bit_and()
 {
     std::unique_ptr<ExprNode> left = parse_shift();
-    while (check_bitwise(Token::Operator::BITWISE_AND))
+    while (check_bitwise(Operator::BIT_AND))
     {
         Token curr_op = advance();
         std::unique_ptr<ExprNode> right = parse_shift();
 
         auto node = std::make_unique<ExprNode>();
         node->type = ExprType::BINARY;
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         node->left = std::move(left);
         node->right = std::move(right);
         left = std::move(node);
@@ -192,14 +193,14 @@ std::unique_ptr<ExprNode> Parser::parse_bit_and()
 std::unique_ptr<ExprNode> Parser::parse_shift()
 {
     std::unique_ptr<ExprNode> left = parse_arith();
-    while (check_bitwise(Token::Operator::BITWISE_LEFT_SHIFT) || check_bitwise(Token::Operator::BITWISE_RIGHT_SHIFT))
+    while (check_bitwise(Operator::BIT_LSHIFT) || check_bitwise(Operator::BIT_RSHIFT))
     {
         Token curr_op = advance();
         std::unique_ptr<ExprNode> right = parse_arith();
 
         auto node = std::make_unique<ExprNode>();
         node->type = ExprType::BINARY;
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         node->left = std::move(left);
         node->right = std::move(right);
         left = std::move(node);
@@ -220,7 +221,7 @@ std::unique_ptr<ExprNode> Parser::parse_arith()
         node->type = ExprType::BINARY;
         node->left = std::move(left);
         node->right = std::move(right);
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         left = std::move(node);
     }
     return left;
@@ -238,7 +239,7 @@ std::unique_ptr<ExprNode> Parser::parse_term()
         node->type = ExprType::BINARY;
         node->left = std::move(left);
         node->right = std::move(right);
-        node->op = std::get<Token::Operator>(curr_op.value);
+        node->op = std::get<Operator>(curr_op.value);
         left = std::move(node);
     }
     return left;
@@ -249,14 +250,14 @@ std::unique_ptr<ExprNode> Parser::parse_unary()
     Token curr_token = Parser::peek();
 
     if (curr_token.type == Token::Type::OP_NOT ||
-        (curr_token.type == Token::Type::OP_ADD && std::get<Token::Operator>(curr_token.value) == Token::Operator::SUB) ||
-        (curr_token.type == Token::Type::OP_BITWISE && std::get<Token::Operator>(curr_token.value) == Token::Operator::BITWISE_NOT))
+        (curr_token.type == Token::Type::OP_ADD && std::get<Operator>(curr_token.value) == Operator::ARITH_SUB) ||
+        (curr_token.type == Token::Type::OP_BITWISE && std::get<Operator>(curr_token.value) == Operator::BIT_NOT))
     {
         Parser::advance();
 
         auto node = std::make_unique<ExprNode>();
         node->type = ExprType::UNARY;
-        node->unary_op = std::get<Token::Operator>(curr_token.value);
+        node->unary_op = std::get<Operator>(curr_token.value);
         node->unary_child = Parser::parse_unary();
 
         return node;

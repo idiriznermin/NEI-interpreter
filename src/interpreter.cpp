@@ -34,11 +34,11 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
         int child = evaluate(node->unary_child.get(), env);
         switch (node->unary_op)
         {
-        case Token::Operator::SUB:
+        case Operator::ARITH_SUB:
             return -child;
-        case Token::Operator::LOGICAL_NOT:
+        case Operator::LOG_NOT:
             return !child;
-        case Token::Operator::BITWISE_NOT:
+        case Operator::BIT_NOT:
             return ~child;
         default:
             std::cout << "Error: unknown unary operator " << op_to_string(node->unary_op) << std::endl;
@@ -63,20 +63,20 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
 
     switch (node->op)
     {
-    case Token::Operator::ADD:
+    case Operator::ARITH_ADD:
         return l + r;
-    case Token::Operator::SUB:
+    case Operator::ARITH_SUB:
         return l - r;
-    case Token::Operator::MUL:
+    case Operator::ARITH_MUL:
         return l * r;
-    case Token::Operator::DIV:
+    case Operator::ARITH_DIV:
         if (r == 0)
         {
             std::cout << "Error: dividing by zero (" << l << " / " << r << ")" << std::endl;
             exit(1);
         }
         return l / r;
-    case Token::Operator::MOD:
+    case Operator::ARITH_MOD:
         if (r == 0)
         {
             std::cout << "Error: modulo by zero (" << l << " % " << r << ")" << std::endl;
@@ -84,33 +84,33 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
         }
         return l % r;
 
-    case Token::Operator::BITWISE_AND:
+    case Operator::BIT_AND:
         return l & r;
-    case Token::Operator::BITWISE_OR:
+    case Operator::BIT_OR:
         return l | r;
-    case Token::Operator::BITWISE_XOR:
+    case Operator::BIT_XOR:
         return l ^ r;
-    case Token::Operator::BITWISE_LEFT_SHIFT:
+    case Operator::BIT_LSHIFT:
         return l << r;
-    case Token::Operator::BITWISE_RIGHT_SHIFT:
+    case Operator::BIT_RSHIFT:
         return l >> r;
 
-    case Token::Operator::EQUALS:
+    case Operator::CMP_EQ:
         return l == r;
-    case Token::Operator::NOT_EQUALS:
+    case Operator::CMP_NEQ:
         return l != r;
-    case Token::Operator::LESS:
+    case Operator::CMP_LT:
         return l < r;
-    case Token::Operator::GREATER:
+    case Operator::CMP_GT:
         return l > r;
-    case Token::Operator::LESS_EQUAL:
+    case Operator::CMP_LEQ:
         return l <= r;
-    case Token::Operator::GREATER_EQUAL:
+    case Operator::CMP_GEQ:
         return l >= r;
 
-    case Token::Operator::LOGICAL_AND:
+    case Operator::LOG_AND:
         return l && r;
-    case Token::Operator::LOGICAL_OR:
+    case Operator::LOG_OR:
         return l || r;
 
     default:

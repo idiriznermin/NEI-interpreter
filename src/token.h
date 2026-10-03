@@ -1,5 +1,7 @@
 #pragma once
 
+#include "operator.h"
+
 #include <string>
 #include<variant>
 
@@ -55,32 +57,6 @@ public:
         ERROR
     };
 
-     enum class Operator
-    {
-        EQUALS,
-        LESS,
-        GREATER,
-        LESS_EQUAL,
-        GREATER_EQUAL,
-        NOT_EQUALS,
-
-        ADD,
-        SUB,
-        MUL,
-        DIV,
-        MOD,
-
-        BITWISE_AND,
-        BITWISE_OR,
-        BITWISE_XOR,
-        BITWISE_NOT,
-        BITWISE_LEFT_SHIFT,
-        BITWISE_RIGHT_SHIFT,
-
-        LOGICAL_NOT,
-        LOGICAL_AND,
-        LOGICAL_OR
-    };
 
     Token::Type type;
 
@@ -105,5 +81,3 @@ public:
     void print() const;
 
 };
-
-const char* op_to_string(Token::Operator op);

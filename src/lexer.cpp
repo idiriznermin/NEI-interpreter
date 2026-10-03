@@ -1,5 +1,6 @@
 #include "token.h"
 #include "lexer.h"
+#include "operator.h"
 
 #include <iostream>
 #include <algorithm>
@@ -67,18 +68,27 @@ std::map<std::string, Token::Type> keywords = {
     {"\n", Token::Type::EOLINE},
     {"exit", Token::Type::EOFILE}};
 
-std::map<std::string, Token::Operator> operators = {
-    {"=", Token::Operator::EQUALS},   {"!=", Token::Operator::NOT_EQUALS},
-    {"<", Token::Operator::LESS},     {">", Token::Operator::GREATER},
-    {"<=", Token::Operator::LESS_EQUAL}, {">=", Token::Operator::GREATER_EQUAL},
-    {"+", Token::Operator::ADD},      {"-", Token::Operator::SUB},
-    {"*", Token::Operator::MUL},      {"/", Token::Operator::DIV},
-    {"%", Token::Operator::MOD},
-    {"&", Token::Operator::BITWISE_AND}, {"|", Token::Operator::BITWISE_OR},
-    {"^", Token::Operator::BITWISE_XOR}, {"~", Token::Operator::BITWISE_NOT},
-    {"<<", Token::Operator::BITWISE_LEFT_SHIFT}, {">>", Token::Operator::BITWISE_RIGHT_SHIFT},
-    {"!", Token::Operator::LOGICAL_NOT},
-    {"&&", Token::Operator::LOGICAL_AND}, {"||", Token::Operator::LOGICAL_OR}
+std::map<std::string, Operator> operators = {
+    {"=", Operator::CMP_EQ},
+    {"<", Operator::CMP_LT},
+    {">", Operator::CMP_GT},
+    {"<=", Operator::CMP_LEQ},
+    {">=", Operator::CMP_GEQ},
+    {"!=", Operator::CMP_NEQ},
+    {"+", Operator::ARITH_ADD},
+    {"-", Operator::ARITH_SUB},
+    {"*", Operator::ARITH_MUL},
+    {"/", Operator::ARITH_DIV},
+    {"%", Operator::ARITH_MOD},
+    {"&", Operator::BIT_AND},
+    {"|", Operator::BIT_OR},
+    {"^", Operator::BIT_XOR},
+    {"~", Operator::BIT_NOT},
+    {"<<", Operator::BIT_LSHIFT},
+    {">>", Operator::BIT_RSHIFT},
+    {"!", Operator::LOG_NOT},
+    {"&&", Operator::LOG_AND},
+    {"||", Operator::LOG_OR}
 };
 /// 0 - empty space
 /// 1 - starts a word
