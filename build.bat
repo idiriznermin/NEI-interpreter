@@ -1,1 +1,1 @@
-g++ -O2 -Wall src/*.cpp -o interp.exe
+g++ -O2 -Wall src/*.cpp -o nei.exe

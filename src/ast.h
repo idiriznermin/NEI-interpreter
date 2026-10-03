@@ -83,7 +83,6 @@ struct StmtNode
     std::unique_ptr<ExprNode> while_cond;
     std::vector<std::unique_ptr<StmtNode>> while_body;
 
-
     /// type = PRINT
     std::vector<PrintArg> print_args;
 };

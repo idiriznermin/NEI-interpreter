@@ -7,7 +7,6 @@
 
 class Token
 {
-
 public:
     enum class Type
     {
@@ -56,7 +55,6 @@ public:
         EOFILE
     };
 
-
     Token::Type type;
 
     std::variant<
@@ -78,5 +76,4 @@ public:
     Token(Type type, Operator value, int line, int col);
 
     void print() const;
-
 };
