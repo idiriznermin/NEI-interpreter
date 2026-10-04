@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "operator.h"
 #include "util.h"
+#include "token_stream.h"
 
 #include <iostream>
 #include <algorithm>
@@ -106,7 +107,7 @@ int convert_digit(char sym)
     return (int)(sym - '0');
 }
 
-std::vector<Token> Lexer::tokenize(const std::string &source)
+TokenStream Lexer::tokenize(const std::string& source)
 {
 
     std::vector<Token> tokens;
@@ -204,5 +205,6 @@ std::vector<Token> Lexer::tokenize(const std::string &source)
 
         pos = best_matchpoint + 1;
     }
-    return tokens;
+    TokenStream token_stream = TokenStream(tokens);
+    return token_stream;
 }

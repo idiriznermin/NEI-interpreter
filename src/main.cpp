@@ -6,6 +6,8 @@
 #include "ast.h"
 #include "environment.h"
 #include "interpreter.h"
+#include "token_stream.h"
+
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -225,14 +227,14 @@ int main(int argc, char* argv[])
     source.erase(std::remove(source.begin(), source.end(), '\r'), source.end());
 
     Lexer lexer;
-    std::vector<Token> tokens = lexer.tokenize(source);
+    TokenStream token_stream = lexer.tokenize(source);
 
     if (debug)
-        for (const Token &t : tokens)
+        for (const Token &t : token_stream.tokens)
             t.print();
 
     Parser parser;
-    auto ast = parser.parse(tokens);
+    auto ast = parser.parse(token_stream);
 
     if (debug)
         for (const auto &stmt : ast)

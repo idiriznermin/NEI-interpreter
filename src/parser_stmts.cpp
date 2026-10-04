@@ -2,12 +2,14 @@
 #include "parser.h"
 #include "ast.h"
 #include "operator.h"
+#include "token_stream.h"
+
 #include <vector>
 
-std::vector<std::unique_ptr<StmtNode>> Parser::parse(std::vector<Token> tokens)
+std::vector<std::unique_ptr<StmtNode>> Parser::parse(TokenStream token_stream)
 {
     pos = 0;
-    this->tokens = tokens;
+    this->tokens = token_stream.tokens;
     std::vector<std::unique_ptr<StmtNode>> node;
     node = parse_statement_list();
     expect(Token::Type::EOFILE, "Error: expected eofile token");

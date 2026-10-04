@@ -1,6 +1,7 @@
 #pragma once
 
 #include "token.h"
+#include "token_stream.h"
 
 #include <string>
 #include <vector>
@@ -10,6 +11,6 @@ class Lexer
 
 public:
     Lexer() = default;
-    std::vector<Token> tokenize(const std::string& source);
+    TokenStream tokenize(const std::string& source);
 
 };

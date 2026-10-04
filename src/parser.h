@@ -2,6 +2,7 @@
 
 #include "token.h"
 #include "ast.h"
+#include "token_stream.h"
 
 #include <vector>
 #include <iostream>
@@ -12,7 +13,7 @@ class Parser
 
 public:
     Parser() = default;
-    std::vector<std::unique_ptr<StmtNode>> parse(std::vector<Token>);
+    std::vector<std::unique_ptr<StmtNode>> parse(TokenStream token_stream);
 
 private:
     std::vector<Token> tokens;
