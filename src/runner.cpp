@@ -257,8 +257,9 @@ void Runner::execute(const StmtNode *node, Environment &env)
     exit(1);
 }
 
-void Runner::run(const AST& program, Environment &env)
+void Runner::run(const AST& program)
 {
+    Environment env;
     for (const auto &node : program.nodes)
         execute(node.get(), env);
     return;

@@ -4,7 +4,6 @@
 #include "lexer.h"
 #include "parser.h"
 #include "ast.h"
-#include "environment.h"
 #include "runner.h"
 #include "token_stream.h"
 
@@ -234,16 +233,17 @@ int main(int argc, char* argv[])
             t.print();
 
     Parser parser;
-    auto ast = parser.parse(token_stream);
+    AST ast = parser.parse(token_stream);
 
     if (debug)
         for (const auto &stmt : ast.nodes)
             print_stmt(stmt.get());
 
     auto start_running = std::chrono::steady_clock::now();
-    Environment env;
+
     Runner runner;
-    runner.run(ast, env);
+    runner.run(ast);
+
     auto end_running = std::chrono::steady_clock::now();
 
     auto ms_running = std::chrono::duration_cast<std::chrono::milliseconds>(end_running - start_running);
@@ -251,17 +251,6 @@ int main(int argc, char* argv[])
     {
         std::cout << "Runtime: " << ms_running.count() << " ms\n";
     }
-
-    /*for (const auto &[name, info] : env.get_variables())
-        std::cout << name << " = " << info.value << (info.is_const ? " (const)" : "") << '\n';
-
-    for (const auto &[name, info] : env.get_arrays())
-    {
-        std::cout << name << " = {";
-        for (size_t i = 0; i < info.values.size(); ++i)
-            std::cout << (i ? ", " : "") << info.values[i];
-        std::cout << "}" << (info.is_const ? " (const)" : "") << '\n';
-    }*/
 
     return 0;
 }

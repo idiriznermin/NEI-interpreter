@@ -8,9 +8,9 @@
 class Runner
 {
 public:
-    void run(const AST &program, Environment &env);
+    void run(const AST& program);
 
 private:
-    int evaluate(const ExprNode* node, Environment &env);
-    void execute(const StmtNode* node, Environment &env);
+    int evaluate(const ExprNode* node, Environment& env);
+    void execute(const StmtNode* node, Environment& env);
 };
