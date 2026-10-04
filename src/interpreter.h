@@ -8,7 +8,7 @@
 class Interpreter
 {
 public:
-    void run(const std::vector<std::unique_ptr<StmtNode>> &program, Environment &env);
+    void run(const AST &program, Environment &env);
 
 private:
     int evaluate(const ExprNode* node, Environment &env);

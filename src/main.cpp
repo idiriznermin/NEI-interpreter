@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
     auto ast = parser.parse(token_stream);
 
     if (debug)
-        for (const auto &stmt : ast)
+        for (const auto &stmt : ast.nodes)
             print_stmt(stmt.get());
 
     auto start_running = std::chrono::steady_clock::now();

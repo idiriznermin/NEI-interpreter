@@ -13,7 +13,7 @@ class Parser
 
 public:
     Parser() = default;
-    std::vector<std::unique_ptr<StmtNode>> parse(TokenStream token_stream);
+    AST parse(TokenStream token_stream);
 
 private:
     std::vector<Token> tokens;

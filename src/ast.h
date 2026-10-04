@@ -2,6 +2,7 @@
 
 #include "token.h"
 #include "operator.h"
+
 #include<memory>
 #include<string>
 #include<vector>
@@ -85,4 +86,13 @@ struct StmtNode
 
     /// type = PRINT
     std::vector<PrintArg> print_args;
+};
+
+class AST
+{
+public:
+   std::vector<std::unique_ptr<StmtNode>> nodes;
+    AST(std::vector<std::unique_ptr<StmtNode>> nodes):
+        nodes(std::move(nodes))
+    {}
 };

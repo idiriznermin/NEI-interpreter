@@ -257,9 +257,9 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
     exit(1);
 }
 
-void Interpreter::run(const std::vector<std::unique_ptr<StmtNode>> &program, Environment &env)
+void Interpreter::run(const AST& program, Environment &env)
 {
-    for (const auto &node : program)
+    for (const auto &node : program.nodes)
         execute(node.get(), env);
     return;
 }

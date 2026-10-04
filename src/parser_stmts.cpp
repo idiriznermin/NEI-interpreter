@@ -6,14 +6,13 @@
 
 #include <vector>
 
-std::vector<std::unique_ptr<StmtNode>> Parser::parse(TokenStream token_stream)
+AST Parser::parse(TokenStream token_stream)
 {
     pos = 0;
     this->tokens = token_stream.tokens;
-    std::vector<std::unique_ptr<StmtNode>> node;
-    node = parse_statement_list();
+    AST ast = AST(parse_statement_list());
     expect(Token::Type::EOFILE, "Error: expected eofile token");
-    return node;
+    return ast;
 }
 
 std::unique_ptr<StmtNode> Parser::parse_while_statement()
@@ -73,7 +72,7 @@ std::unique_ptr<StmtNode> Parser::parse_if_statement()
     return node;
 }
 
-std::vector<std::unique_ptr<StmtNode>> Parser::parse_statement_list()
+std::vector<std::unique_ptr<StmtNode>>  Parser::parse_statement_list()
 {
     std::vector<std::unique_ptr<StmtNode>> statements;
     while (peek().type == Token::Type::EOLINE)
