@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "ast.h"
 #include "environment.h"
-#include "interpreter.h"
+#include "runner.h"
 #include "token_stream.h"
 
 #include <chrono>
@@ -242,8 +242,8 @@ int main(int argc, char* argv[])
 
     auto start_running = std::chrono::steady_clock::now();
     Environment env;
-    Interpreter inter;
-    inter.run(ast, env);
+    Runner runner;
+    runner.run(ast, env);
     auto end_running = std::chrono::steady_clock::now();
 
     auto ms_running = std::chrono::duration_cast<std::chrono::milliseconds>(end_running - start_running);

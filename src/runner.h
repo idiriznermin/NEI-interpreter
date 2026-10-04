@@ -5,7 +5,7 @@
 
 #include <vector>
 
-class Interpreter
+class Runner
 {
 public:
     void run(const AST &program, Environment &env);

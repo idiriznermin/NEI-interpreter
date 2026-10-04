@@ -2,7 +2,7 @@
 
 #include <map>
 #include <string>
-#include<vector>
+#include <vector>
 
 struct var_info
 {

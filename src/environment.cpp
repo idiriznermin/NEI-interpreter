@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+
 void Environment::declare(std::string name, int value, bool is_const)
 {
     if (variables.count(name))

@@ -1,4 +1,4 @@
-#include "interpreter.h"
+#include "runner.h"
 
 #include "ast.h"
 #include "parser.h"
@@ -9,7 +9,7 @@
 #include <string>
 #include <iostream>
 
-int Interpreter::evaluate(const ExprNode *node, Environment &env)
+int Runner::evaluate(const ExprNode *node, Environment &env)
 {
     if (node == nullptr)
         return 0;
@@ -120,7 +120,7 @@ int Interpreter::evaluate(const ExprNode *node, Environment &env)
     exit(1);
 }
 
-void Interpreter::execute(const StmtNode *node, Environment &env)
+void Runner::execute(const StmtNode *node, Environment &env)
 {
     if (node == nullptr)
         return;
@@ -257,7 +257,7 @@ void Interpreter::execute(const StmtNode *node, Environment &env)
     exit(1);
 }
 
-void Interpreter::run(const AST& program, Environment &env)
+void Runner::run(const AST& program, Environment &env)
 {
     for (const auto &node : program.nodes)
         execute(node.get(), env);
