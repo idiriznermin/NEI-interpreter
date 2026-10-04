@@ -1,0 +1,4 @@
+var int: a
+var arr<int, 5>: b
+a := b
+exit
