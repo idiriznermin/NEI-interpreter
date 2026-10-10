@@ -18,12 +18,15 @@ private:
         bool is_const;
         int size;
         Symbol(){};
+        Symbol(bool is_array, bool is_const, int size):
+            is_array(is_array), is_const(is_const), size(size)
+        {}
     };
     std::map <std::string, Symbol> mp;
     int error_count = 0;
-    void declare(const std::string name, Symbol symbol);
+    void declare(const std::string& name, Symbol symbol);
     void check_expr(const ExprNode *node);
     void error(const std::string& message);
     void check_statement(const StmtNode *node);
-    void check_statement_list(const std::vector<std::unique_ptr<StmtNode>> nodes);
+    void check_body(const std::vector<std::unique_ptr<StmtNode>>& body);
 };

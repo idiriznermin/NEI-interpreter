@@ -6,6 +6,7 @@
 #include "ast.h"
 #include "runner.h"
 #include "token_stream.h"
+#include "checker.h"
 
 #include <chrono>
 #include <iostream>
@@ -45,7 +46,7 @@ void print_expr(const ExprNode *node, int depth = 0)
         std::cout << "OPERATOR: " << operator_to_string(node->op) << '\n';
         break;
     case ExprType::UNARY:
-        std::cout << "UNARY OPERATOR: " <<operator_to_string(node->unary_op) << '\n';
+        std::cout << "UNARY OPERATOR: " << operator_to_string(node->unary_op) << '\n';
         break;
     case ExprType::READ:
         std::cout << "READ()\n";
@@ -197,7 +198,7 @@ void print_body(const std::vector<std::unique_ptr<StmtNode>> &body, int depth)
         print_stmt(stmt.get(), depth);
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     if (argc < 2)
     {
@@ -212,7 +213,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     bool debug = false, time = false;
-    for (int i = 2; i < argc; ++ i)
+    for (int i = 2; i < argc; ++i)
     {
         if (std::string(argv[i]) == "--debug")
             debug = true;
@@ -238,6 +239,10 @@ int main(int argc, char* argv[])
     if (debug)
         for (const auto &stmt : ast.nodes)
             print_stmt(stmt.get());
+
+    CompileChecker checker;
+    if (!checker.check(ast))
+        return 1;
 
     auto start_running = std::chrono::steady_clock::now();
 
