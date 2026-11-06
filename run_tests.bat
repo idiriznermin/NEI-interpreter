@@ -2,6 +2,7 @@
 setlocal EnableDelayedExpansion
 set EXE=nei.exe
 set DIR=tests\examples
+set ERR_DIR=tests\errors
 set OUT=%TEMP%\nei_tests
 set /a pass=0, fail=0, total_ms=0
 
@@ -31,6 +32,26 @@ for %%f in ("%DIR%\*.nei") do (
         echo PASS %%~nxf
         set /a pass+=1
     )
+)
+
+echo.
+echo === Compile errors ===
+set /a err_pass=0, err_fail=0
+for %%f in ("%ERR_DIR%\*.nei") do (
+    "%EXE%" "%%f" < nul > "%OUT%\%%~nf.err.actual" 2>&1
+    fc "%OUT%\%%~nf.err.actual" "%%~dpnf.expected" > nul 2>&1
+    if errorlevel 1 (
+        echo FAIL %%~nxf
+        set /a err_fail+=1, fail+=1
+    ) else (
+        echo PASS %%~nxf
+        set /a err_pass+=1, pass+=1
+    )
+)
+if %err_fail%==0 (
+    echo All %err_pass% error tests passed, every error was caught.
+) else (
+    echo %err_fail% error test^(s^) failed, some errors were not reported as expected.
 )
 
 echo.

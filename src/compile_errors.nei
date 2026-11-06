@@ -1,0 +1,16 @@
+print("if you see this line, the checker did not stop the program")
+var int: a
+var int: a
+const int: limit := 10
+var arr<int, 3>: v
+var int: x := y + 1
+limit := 5
+a, x := 1
+x := v + 1
+x[0] := 5
+v[7] := 1
+x := 10 / 0
+if (a = 99)
+    z := 3
+endif
+exit

@@ -1,0 +1,2 @@
+Compile error: 'b' is an array, use an index like b[0]
+1 error(s), program did not run

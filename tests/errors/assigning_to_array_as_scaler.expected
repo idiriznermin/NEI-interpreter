@@ -1,0 +1,2 @@
+Compile error: 'a' is an array, use an index like a[0]
+1 error(s), program did not run
